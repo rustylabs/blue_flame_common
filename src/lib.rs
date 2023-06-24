@@ -167,7 +167,9 @@ impl FlameobjectSettings
 // Deals anything to do with file paths
 pub mod file_path_handling
 {
-    use std::env;
+    use std::{env, path::PathBuf, path::Path};
+
+    use blue_engine::StringBufferTrait;
     // Translates shit like ~ and $HOME to actual paths
     fn variable_conversion(file_path: &mut String)
     {
@@ -196,21 +198,57 @@ pub mod file_path_handling
         
     }
     // Convert from fullpath to relativepath
-    pub fn fullpath_to_relativepath(file_path: &str)
+    pub fn fullpath_to_relativepath(file_path: &str) -> String
     {
-        use std::path::PathBuf;
-        use std::env;
-
-
-
-        if PathBuf::from(&file_path).is_relative() == false
+        // return if path is already relative
+        if Path::is_relative(&PathBuf::from(format!("{file_path}"))) == true
         {
-            let mut file_path = String::from(format!("{}", file_path));
-            variable_conversion(&mut file_path);
-            file_path.strip_prefix(&env::current_dir().unwrap().display().to_string()).unwrap();
-
-            println!("fullpath_to_relativepath: {file_path}");
+            return file_path.as_string();
         }
+        //println!("file_path: {file_path}");
+
+        let mut relative_path = PathBuf::new();
+        let file_path: Vec<&str> = file_path.split("/").collect();
+
+        let project_dir = env::current_dir().unwrap().display().to_string();
+        let project_dir: Vec<&str> = project_dir.split("/").collect();
+    
+        // Increments if both variables have the same dir to determine difference between the two
+        let mut len_samedir: i16 = 0;
+        let mut runonce_gobackdir = true;
+    
+        for (token_filepath, token_project_dir) in file_path.iter().zip(project_dir.iter().cycle())
+        {
+            //println!("token_filepath: {token_filepath}");
+            if token_filepath == token_project_dir
+            {
+                len_samedir += 1;
+                continue;
+            }
+            if token_filepath == &""
+            {
+                continue;
+            }
+            if runonce_gobackdir == true
+            {
+                let length = project_dir.len() as i16 - len_samedir;
+                // If filepath is less than the project path then execute
+                if length > 0
+                {
+                    for i in 0..length
+                    {
+                        relative_path.push("..");
+                    }
+                }
+    
+                runonce_gobackdir = false;
+            }
+            relative_path.push(format!("{token_filepath}").as_str());
+        }
+
+        return relative_path.display().to_string();
+
+        
     }
     // Convert from relativepath to fullpath
     pub fn relativepath_to_fullpath(file_path: &str)
