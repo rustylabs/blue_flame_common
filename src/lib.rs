@@ -171,7 +171,7 @@ pub mod file_path_handling
 
     use blue_engine::StringBufferTrait;
     // Translates shit like ~ and $HOME to actual paths
-    fn variable_conversion(file_path: &mut String)
+    fn variables_conversion(file_path: &mut String)
     {
         #[cfg(target_os = "linux")]
         let home_variables = ["~", "$HOME"];
@@ -208,6 +208,8 @@ pub mod file_path_handling
         //println!("file_path: {file_path}");
 
         let mut relative_path = PathBuf::new();
+        let mut file_path = String::from(format!("{file_path}"));
+        variables_conversion(&mut file_path);
         let file_path: Vec<&str> = file_path.split("/").collect();
 
         let project_dir = env::current_dir().unwrap().display().to_string();
@@ -225,6 +227,7 @@ pub mod file_path_handling
                 len_samedir += 1;
                 continue;
             }
+            // To prevent extra slashes '/'
             if token_filepath == &""
             {
                 continue;
@@ -251,20 +254,46 @@ pub mod file_path_handling
         
     }
     // Convert from relativepath to fullpath
-    pub fn relativepath_to_fullpath(file_path: &str)
+    pub fn relativepath_to_fullpath(file_path: &str) -> String
     {
-        use std::path::PathBuf;
-        use std::env;
-
         let mut file_path = String::from(format!("{}", file_path));
-        variable_conversion(&mut file_path);
+        variables_conversion(&mut file_path);
 
-        if PathBuf::from(&file_path).is_relative() == true
+        // If filepath is already fullpath then return
+        if PathBuf::from(&file_path).is_relative() == false
         {
-            file_path = file_path.replace("something", "hello");
-
-            println!("relativepath_to_fullpath: {file_path}");
+            return file_path.to_string();
         }
+
+        let project_dir = env::current_dir().unwrap().display().to_string();
+        let project_dir: Vec<&str> = project_dir.split("/").collect();
+
+        let file_path: Vec<&str> = file_path.split("/").collect();
+    
+        let mut full_path = PathBuf::new();
+    
+        full_path.push("/");
+        for token in project_dir.iter()
+        {
+            full_path.push(token);
+        }
+        for token in file_path.iter()
+        {
+            // To prevent extra slashes '/'
+            if token == &""
+            {
+                continue;
+            }
+            else if token == &".."
+            {
+                full_path.pop();
+                continue;
+            }
+            full_path.push(token);
+        }
+
+
+        return full_path.display().to_string();
     }
 }
 
