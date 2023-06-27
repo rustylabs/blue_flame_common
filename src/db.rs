@@ -19,21 +19,21 @@ pub mod flameobjects
         pub fn delete_shapes(flameobjects: &mut Vec<(crate::Flameobject, crate::FlameobjectSettings)>, objects: &mut ObjectStorage)
         {
             // Destroys all shapes from the scene
-            for object in flameobjects.iter_mut()
+            for flameobject in flameobjects.iter_mut()
             {
-                crate::object_actions::delete_shape(&object.0.label, objects);
+                crate::object_actions::delete_shape(&flameobject.0.label, objects);
             }
         }
-        pub fn create_shapes(flameobjects: &mut Vec<(crate::Flameobject, crate::FlameobjectSettings)>,
+        pub fn create_shapes(flameobjects: &mut Vec<(crate::Flameobject, crate::FlameobjectSettings)>, project_dir: &str,
         /*Game engine shit*/    renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
         {
-            for object in flameobjects.iter()
+            for flameobject in flameobjects.iter()
             {
-                crate::object_actions::create_shape(object, renderer, objects, window);
+                crate::object_actions::create_shape(flameobject, project_dir, renderer, objects, window);
                 /*
-                for i in 0..object.1.object_type.len()
+                for i in 0..flameobject.1.object_type.len()
                 {
-                    if crate::object_settings::object_actions::create_shape(object, i, renderer, objects, window) == true
+                    if crate::object_settings::object_actions::create_shape(flameobject, i, renderer, objects, window) == true
                     {
                         break;
                     }
@@ -44,27 +44,27 @@ pub mod flameobjects
     }
 
 
-    pub fn save(flameobjects: &[(crate::Flameobject, crate::FlameobjectSettings)], file_path: &str)
+    pub fn save(flameobjects: &[(crate::Flameobject, crate::FlameobjectSettings)], filepath: &str)
     {
         let data = postcard::to_stdvec(&(VERSION, flameobjects)).unwrap();
 
-        match std::fs::write(format!("{}", file_path), &data)
+        match std::fs::write(format!("{}", filepath), &data)
         {
             Ok(_)               => println!("File saved!"),
             Err(e)       => println!("Save error: {e}"),
         }
 
     }
-    pub fn load(flameobjects: &mut Vec<(crate::Flameobject, crate::FlameobjectSettings)>, file_path: &str, remove_shapes: bool,
+    pub fn load(flameobjects: &mut Vec<(crate::Flameobject, crate::FlameobjectSettings)>, project_dir: &str, filepath: &str, remove_shapes: bool,
         /*Game engine shit*/ renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
 
-        let mut file = match std::fs::File::open(format!("{}", file_path))
+        let mut file = match std::fs::File::open(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)))
         {
-            Ok(d) => {println!("Flameobject: {} loaded!", file_path); d},
+            Ok(d) => {println!("Flameobject: {} loaded!", filepath); d},
             Err(e) => 
                             {
-                                println!("Load error on flameobjects: {}: {e}", file_path);
+                                println!("Load error on flameobjects: {}: {e}", filepath);
                                 
                                 if remove_shapes == true
                                 {
@@ -76,7 +76,7 @@ pub mod flameobjects
                                     flameobjects.push((crate::Flameobject::init(0), crate::FlameobjectSettings::init()));
 
                                     // Creates new shapes
-                                    alter_shapes::create_shapes(flameobjects, renderer, objects, window);
+                                    alter_shapes::create_shapes(flameobjects, project_dir, renderer, objects, window);
                                 }
                                 return;
                             }
@@ -111,7 +111,7 @@ pub mod flameobjects
 
 
         // Create all the shapes after loading into memory
-        alter_shapes::create_shapes(flameobjects, renderer, objects, window);
+        alter_shapes::create_shapes(flameobjects, project_dir, renderer, objects, window);
 
         //println!("db version Flameobject {}: {version}", scene.label);
     }

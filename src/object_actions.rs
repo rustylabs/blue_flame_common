@@ -3,7 +3,7 @@ use crate::{Flameobject, FlameobjectSettings};
 
 
 // Either puts new shape or changes shape
-pub fn create_shape(flameobject: &(Flameobject, FlameobjectSettings), renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
+pub fn create_shape(flameobject: &(Flameobject, FlameobjectSettings), project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
 {
     for (i, shape) in flameobject.1.object_type.iter().enumerate()
     {
@@ -17,12 +17,12 @@ pub fn create_shape(flameobject: &(Flameobject, FlameobjectSettings), renderer: 
 
                 _       => panic!("Shape number is out of bounds"),
             }
-            update_shape(flameobject, objects, window, renderer);
+            update_shape(flameobject, project_dir, objects, window, renderer);
             break;
         }
     }
 
-    fn update_shape(flameobject: &(Flameobject, FlameobjectSettings), objects: &mut ObjectStorage, window: &Window, renderer: &mut Renderer)
+    fn update_shape(flameobject: &(Flameobject, FlameobjectSettings), project_dir: &str, objects: &mut ObjectStorage, window: &Window, renderer: &mut Renderer)
     {
         update_shape::size(flameobject, objects, window);
         update_shape::position(flameobject, objects);
@@ -31,7 +31,7 @@ pub fn create_shape(flameobject: &(Flameobject, FlameobjectSettings), renderer: 
         {
             update_shape::rotation(&flameobject.0.label, crate::mapper::three_d_lables::enumm(i), *rotation, objects)
         }
-        update_shape::texture(flameobject, objects, renderer);
+        update_shape::texture(flameobject, project_dir, objects, renderer);
         
     }
 }
@@ -84,7 +84,7 @@ pub mod update_shape
             .rotate(rotation, axis);
         */
     }
-    pub fn texture(flameobject: &(Flameobject, FlameobjectSettings), objects: &mut ObjectStorage, renderer: &mut Renderer)
+    pub fn texture(flameobject: &(Flameobject, FlameobjectSettings), project_dir: &str, objects: &mut ObjectStorage, renderer: &mut Renderer)
     {
         //let mut texture_mode: Result<blue_engine::TextureMode, &'static str> = blue_engine::TextureMode::Clamp;
         let mut texture_mode: Option<blue_engine::TextureMode> = None;
@@ -100,9 +100,8 @@ pub mod update_shape
 
         let texture = renderer.build_texture(
             "Main Player",
-            //blue_engine::TextureData::Bytes(include_bytes!("/mnt/Windows10/Users/Nishant/Desktop/My made programs/Projects/Game Engine/Example projects/final_test/assets/main_player.png").to_vec()),
-            //blue_engine::TextureData::Bytes(std::fs::read(&flameobject.1.texture.file_location).unwrap()),
-            blue_engine::TextureData::Bytes(match std::fs::read(&flameobject.1.texture.file_location)
+            //blue_engine::TextureData::Bytes(match std::fs::read(&flameobject.1.texture.file_location)
+            blue_engine::TextureData::Bytes(match std::fs::read(crate::filepath_handling::relativepath_to_fullpath(&flameobject.1.texture.file_location, project_dir))
             {
                 Ok(v)       => v,
                 Err(e)        => {println!("TextureData error: {e}"); blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec()}
