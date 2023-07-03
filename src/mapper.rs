@@ -36,12 +36,38 @@ pub mod texture
         return textures[position];
     }
 }
+#[derive(Debug, Clone, Copy)]
+pub enum ViewModes
+{
+    Objects(&'static str),
+    Scenes(&'static str),
+}
+impl ViewModes
+{
+    /*
+    pub fn label(position: usize) -> &'static str
+    {
+        //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
+        let view_modes = ["Objects", "Scenes"];
+        return view_modes[position];
+    }
+    */
+    pub fn view_mode(position: usize) -> Self
+    {
+        //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
+        let view_modes = [ViewModes::Objects("Objects"), ViewModes::Scenes("Scenes")];
+        return view_modes[position];
+    }
+}
+
+/*
 pub fn view_mode(position: usize) -> &'static str
 {
     //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
     let view_modes = ["Objects", "Scenes"];
     return view_modes[position];
 }
+*/
 pub fn game_type(position: usize) -> &'static str
 {
     //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
