@@ -44,11 +44,11 @@ pub mod flameobjects
     }
 
 
-    pub fn save(flameobjects: &[(crate::Flameobject, crate::FlameobjectSettings)], filepath: &str)
+    pub fn save(flameobjects: &[(crate::Flameobject, crate::FlameobjectSettings)], filepath: &str, project_dir: &str)
     {
         let data = postcard::to_stdvec(&(VERSION, flameobjects)).unwrap();
 
-        match std::fs::write(format!("{}", filepath), &data)
+        match std::fs::write(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)), &data)
         {
             Ok(_)               => println!("File saved!"),
             Err(e)       => println!("Save error: {e}"),

@@ -58,11 +58,11 @@ impl Scene
     {
         return format!("{}/{}", self.dir_save, self.label);
     }
-    pub fn change_choice(list: &mut [(Self, SceneSettings)], choice_true: u16)
+    pub fn change_choice(list: &mut [(Self, SceneSettings)], choice_true: usize)
     {
         for (i, item) in list.iter_mut().enumerate()
         {
-            if i as u16 == choice_true
+            if i == choice_true
             {
                 item.0.selected = true;
             }
