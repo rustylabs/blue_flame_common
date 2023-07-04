@@ -1,11 +1,46 @@
 // position means position of array/Vector
 // What shape, i.e. circle, triangle etc
+#[derive(Debug, Clone, Copy)]
+pub enum ObjectType
+{
+    Square(&'static str),
+    Triangle(&'static str),
+    Line(&'static str),
+}
+impl ObjectType
+{
+    pub fn value(i: usize) -> Self
+    {
+        //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
+        let values = [ObjectType::Square("Square"), ObjectType::Triangle("Triangle"), ObjectType::Line("Line")];
+        return values[i];
+    }
+}
+/*
 pub fn object_type(position: usize) -> &'static str
 {
     let shapes: &[&'static str] = &["Square", "Triangle", "Line"];
     return shapes[position];
 }
+*/
 // x, y, z
+use blue_engine::RotateAxis;
+#[derive(Debug, Clone, Copy)]
+pub enum ThreeDLabels
+{
+    X(u8, RotateAxis),
+    Y(u8, RotateAxis),
+    Z(u8, RotateAxis),
+}
+impl ThreeDLabels
+{
+    pub fn value(i: usize) -> Self
+    {
+        let values = [ThreeDLabels::X(b'x', RotateAxis::X), ThreeDLabels::Y(b'y', RotateAxis::Y), ThreeDLabels::Z(b'z', RotateAxis::Z)];
+        return values[i];
+    }
+}
+/*
 pub mod three_d_lables
 {
     use blue_engine::RotateAxis;
@@ -21,6 +56,7 @@ pub mod three_d_lables
         return axis[position];
     }
 }
+*/
 pub mod texture
 {
     use blue_engine::TextureMode;
@@ -44,19 +80,10 @@ pub enum ViewModes
 }
 impl ViewModes
 {
-    /*
-    pub fn label(position: usize) -> &'static str
+    pub fn value(i: usize) -> Self
     {
-        //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
-        let view_modes = ["Objects", "Scenes"];
-        return view_modes[position];
-    }
-    */
-    pub fn view_mode(position: usize) -> Self
-    {
-        //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
-        let view_modes = [ViewModes::Objects("Objects"), ViewModes::Scenes("Scenes")];
-        return view_modes[position];
+        let values = [ViewModes::Objects("Objects"), ViewModes::Scenes("Scenes")];
+        return values[i];
     }
 }
 
@@ -68,9 +95,9 @@ pub fn view_mode(position: usize) -> &'static str
     return view_modes[position];
 }
 */
-pub fn game_type(position: usize) -> &'static str
+pub fn game_type(i: usize) -> &'static str
 {
     //let mut view_modes = object_settings::radio_options::init(&["Objects", "Scenes"]);
     let game_types = ["2D", "3D"];
-    return game_types[position];
+    return game_types[i];
 }

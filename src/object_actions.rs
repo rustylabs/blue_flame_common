@@ -1,5 +1,5 @@
 use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
-use crate::{Flameobject, FlameobjectSettings};
+use crate::{Flameobject, FlameobjectSettings, mapper::{self, ThreeDLabels, ObjectType}};
 
 
 // Either puts new shape or changes shape
@@ -9,13 +9,11 @@ pub fn create_shape(flameobject: &(Flameobject, FlameobjectSettings), project_di
     {
         if *shape == true
         {
-            match i
+            match mapper::ObjectType::value(i)
             {
-                0       => square(flameobject.0.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
-                1       => triangle(flameobject.0.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
-                2       => println!("todo!: line()"),
-
-                _       => panic!("Shape number is out of bounds"),
+                ObjectType::Square(_)       => square(flameobject.0.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
+                ObjectType::Triangle(_)     => triangle(flameobject.0.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
+                ObjectType::Line(_)         => println!("todo!: line()"),
             }
             update_shape(flameobject, project_dir, objects, window, renderer);
             break;
@@ -29,7 +27,14 @@ pub fn create_shape(flameobject: &(Flameobject, FlameobjectSettings), project_di
         update_shape::color(flameobject, objects);
         for (i, rotation) in flameobject.1.rotation.iter().enumerate()
         {
-            update_shape::rotation(&flameobject.0.label, crate::mapper::three_d_lables::enumm(i), *rotation, objects)
+            update_shape::rotation(&flameobject.0.label,
+                match mapper::ThreeDLabels::value(i) 
+                {
+                    ThreeDLabels::X(_, axis)       => axis,
+                    ThreeDLabels::Y(_, axis)       => axis,
+                    ThreeDLabels::Z(_, axis)       => axis,
+                }
+            , *rotation, objects)
         }
         update_shape::texture(flameobject, project_dir, objects, renderer);
         
