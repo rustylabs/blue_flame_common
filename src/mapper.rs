@@ -16,13 +16,6 @@ impl ObjectType
         return values[i];
     }
 }
-/*
-pub fn object_type(position: usize) -> &'static str
-{
-    let shapes: &[&'static str] = &["Square", "Triangle", "Line"];
-    return shapes[position];
-}
-*/
 // x, y, z
 use blue_engine::RotateAxis;
 #[derive(Debug, Clone, Copy)]
@@ -40,23 +33,23 @@ impl ThreeDLabels
         return values[i];
     }
 }
-/*
-pub mod three_d_lables
+use blue_engine::TextureMode;
+#[derive(Debug, Clone, Copy)]
+pub enum Texture
 {
-    use blue_engine::RotateAxis;
-
-    pub fn label(position: usize) -> u8
+    Clamp(&'static str, TextureMode),
+    Repeat(&'static str, TextureMode),
+    MirrorRepeat(&'static str, TextureMode),
+}
+impl Texture
+{
+    pub fn value(i: usize) -> Self
     {
-        let axis = [b'x', b'y', b'z'];
-        return axis[position];
-    }
-    pub fn enumm(position: usize) -> RotateAxis
-    {
-        let axis = [RotateAxis::X, RotateAxis::Y, RotateAxis::Z];
-        return axis[position];
+        let values = [Texture::Clamp("Clamp", TextureMode::Clamp), Texture::Repeat("Repeat", TextureMode::Repeat), Texture::MirrorRepeat("MirrorRepeat", TextureMode::MirrorRepeat)];
+        return values[i];
     }
 }
-*/
+
 pub mod texture
 {
     use blue_engine::TextureMode;
