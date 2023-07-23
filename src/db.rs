@@ -4,7 +4,7 @@ pub mod flameobjects
     //use super::*;
     use std::io::Read;
     use blue_engine::{ObjectStorage, Window, Renderer};
-    use crate::structures::{flameobject::Flameobject, loaded_scene::LoadedScene};
+    use crate::structures::{flameobject::Flameobject, scene::Scene};
     
 
     const VERSION: f32 = 0.1;
@@ -45,9 +45,9 @@ pub mod flameobjects
     }
 
 
-    pub fn save(loaded_scene: &LoadedScene, filepath: &str, project_dir: &str) -> bool
+    pub fn save(scene: &Scene, filepath: &str, project_dir: &str) -> bool
     {
-        let data = postcard::to_stdvec(&(VERSION, loaded_scene)).unwrap();
+        let data = postcard::to_stdvec(&(VERSION, scene)).unwrap();
 
         match std::fs::write(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)), &data)
         {
@@ -56,7 +56,7 @@ pub mod flameobjects
         }
 
     }
-    pub fn load(loaded_scene: &mut LoadedScene, project_dir: &str, filepath: &str, remove_shapes: bool,
+    pub fn load(scene: &mut Scene, project_dir: &str, filepath: &str, remove_shapes: bool,
         /*Game engine shit*/ renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window) -> bool // Making sure there was no issue with loading file due to error in filepath
     {
 
@@ -96,7 +96,7 @@ pub mod flameobjects
         }
 
         //let value: (f32, Vec<(Object, Object1)>) = match postcard::from_bytes(&file)
-        let value: (f32, LoadedScene) = match postcard::from_bytes(&data)
+        let value: (f32, Scene) = match postcard::from_bytes(&data)
         {
             Ok(d)      => d,
             Err(e)                  => {println!("Error on load: {e}"); return false;},
@@ -105,17 +105,17 @@ pub mod flameobjects
         // Deletes shapes
         if remove_shapes == true
         {
-            alter_shapes::delete_shapes(&mut loaded_scene.flameobjects, objects);
+            alter_shapes::delete_shapes(&mut scene.flameobjects, objects);
         }
 
-        loaded_scene.flameobjects = Vec::new();
+        scene.flameobjects = Vec::new();
         let version = value.0;
-        *loaded_scene = value.1;
+        *scene = value.1;
 
 
 
         // Create all the shapes after loading into memory
-        alter_shapes::create_shapes(&mut loaded_scene.flameobjects, project_dir, renderer, objects, window);
+        alter_shapes::create_shapes(&mut scene.flameobjects, project_dir, renderer, objects, window);
 
         //println!("db version Flameobject {}: {version}", scene.label);
         return true;

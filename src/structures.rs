@@ -1,5 +1,33 @@
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct D3Labels
+{
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
+impl D3Labels
+{
+
+    fn init(init: f32) -> Self
+    {
+        Self
+        {
+            x: init,
+            y: init,
+            z: init,
+        }
+    }
+    pub fn elements(&mut self) -> [(&mut f32, u8); 3]
+    {
+        return [(&mut self.x, b'x'), (&mut self.y, b'y'), (&mut self.z, b'z')];
+    }
+}
+
 pub mod flameobject
 {
+    use crate::radio_options::ObjectType;
+    use super::D3Labels;
+
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Flameobject
     {
@@ -52,10 +80,12 @@ pub mod flameobject
     pub struct Settings
     {
         pub object_type         : [bool; 3],
+        //pub object_type         : ObjectType,
         //position            : [object_settings::three_d_lables::Fields; 3],
-        pub position            : [f32; 3],
-        pub size                : [f32; 3],
-        pub rotation            : [f32; 3],
+        //pub position            : [f32; 3],
+        pub position            : D3Labels,
+        pub size                : D3Labels,
+        pub rotation            : D3Labels,
         pub texture             : Texture,
         //texture             : [String; 3],
         pub color               : [f32; 4],
@@ -70,9 +100,11 @@ pub mod flameobject
             Self
             {
                 object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
-                position            : [0f32; 3],
-                size                : [30f32; 3],
-                rotation            : [0f32; 3],
+                //object_type         : ObjectType::Square,
+                //position            : [0f32; 3],
+                position            : D3Labels::init(0f32),
+                size                : D3Labels::init(30f32),
+                rotation            : D3Labels::init(0f32),
                 //texture             : [EMPTY; 3],
                 texture             : Texture::init(),
                 color               : [1f32; 4],
@@ -104,6 +136,7 @@ pub mod flameobject
 pub mod scene
 {
     use crate::radio_options::GameTypeDimensions;
+    use crate::structures::flameobject::Flameobject;
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Scene
@@ -112,6 +145,7 @@ pub mod scene
         pub label               : String,
         pub selected            : bool,
         pub settings            : Settings,
+        pub flameobjects        : Vec<Flameobject>,
     }
     impl Scene
     {
@@ -123,6 +157,7 @@ pub mod scene
                 label               : format!("Scene {id}"),
                 selected            : true,
                 settings            : Settings::default(),
+                flameobjects        : Vec::new(),
             }
         }
         pub fn change_choice(list: &mut [Self], choice_true: usize)
@@ -169,6 +204,7 @@ pub mod scene
     }
 }
 
+/*
 pub mod loaded_scene
 {
     use super::{scene::Scene, flameobject::Flameobject};
@@ -191,6 +227,7 @@ pub mod loaded_scene
         }
     }
 }
+*/
 
 // Individual project info, gets saved in individual project info
 pub mod project_config

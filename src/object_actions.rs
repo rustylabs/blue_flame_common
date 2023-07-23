@@ -1,5 +1,5 @@
 use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
-use crate::{structures::flameobject::Flameobject, mapper::{self, ThreeDLabels, ObjectType}};
+use crate::{structures::flameobject::Flameobject, mapper::{self, ObjectType}};
 
 
 // Either puts new shape or changes shape
@@ -25,8 +25,9 @@ pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut
         update_shape::size(flameobject, objects, window);
         update_shape::position(flameobject, objects);
         update_shape::color(flameobject, objects);
-        for (i, rotation) in flameobject.settings.rotation.iter().enumerate()
+        for i in 0..3
         {
+            /*
             update_shape::rotation(&flameobject.label,
                 match mapper::ThreeDLabels::value(i) 
                 {
@@ -35,6 +36,7 @@ pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut
                     ThreeDLabels::Z(_, axis)       => axis,
                 }
             , *rotation, objects)
+            */
         }
         update_shape::texture(flameobject, project_dir, objects, renderer);
         
@@ -56,14 +58,14 @@ pub mod update_shape
         objects
             .get_mut(&flameobject.label)
             .unwrap()
-            .resize(flameobject.settings.size[0], flameobject.settings.size[1], flameobject.settings.size[2], window.inner_size());
+            .resize(flameobject.settings.size.x, flameobject.settings.size.y, flameobject.settings.size.z, window.inner_size());
     }
     pub fn position(flameobject: &Flameobject, objects: &mut ObjectStorage)
     {
         objects
             .get_mut(&flameobject.label)
             .unwrap()
-            .position(flameobject.settings.position[0], flameobject.settings.position[1], flameobject.settings.position[2]);
+            .position(flameobject.settings.position.x, flameobject.settings.position.y, flameobject.settings.position.z);
     }
     pub fn color(flameobject: &Flameobject, objects: &mut ObjectStorage)
     {
