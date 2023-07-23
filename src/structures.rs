@@ -25,7 +25,7 @@ impl D3Labels
 
 pub mod flameobject
 {
-    use crate::radio_options::ObjectType;
+    use crate::radio_options::object_type::{ObjectType, shape};
     use super::D3Labels;
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -79,8 +79,8 @@ pub mod flameobject
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Settings
     {
-        pub object_type         : [bool; 3],
-        //pub object_type         : ObjectType,
+        //pub object_type         : [bool; 3],
+        pub object_type         : ObjectType,
         //position            : [object_settings::three_d_lables::Fields; 3],
         //pub position            : [f32; 3],
         pub position            : D3Labels,
@@ -99,8 +99,8 @@ pub mod flameobject
     
             Self
             {
-                object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
-                //object_type         : ObjectType::Square,
+                //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
+                object_type         : ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
                 position            : D3Labels::init(0f32),
                 size                : D3Labels::init(30f32),

@@ -2,17 +2,9 @@
 pub enum GameTypeDimensions{D2, D3}
 impl GameTypeDimensions
 {
-    pub fn label(value: &Self) -> &'static str
+    pub fn elements() -> [(Self, &'static str); 2]
     {
-        match value
-        {
-            Self::D2        => "2D",
-            Self::D3        => "3D",
-        }
-    }
-    pub fn elements() -> [Self; 2]
-    {
-        return [Self::D2, Self::D3];
+        return [(Self::D2, "2D"), (Self::D3, "3D")];
     }
 }
 
@@ -53,35 +45,16 @@ impl Texture
     }
 }
 
-#[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
-pub enum ObjectType{Square, Triangle, Line}
-impl ObjectType
-{
-    pub fn label(value: &Self) -> &'static str
-    {
-        match value
-        {
-            Self::Square      => "Square",
-            Self::Triangle    => "Triangle",
-            Self::Line        => "Line",
-        }
-    }
-    pub fn elements() -> [Self; 3]
-    {
-        return [Self::Square, Self::Triangle, Self::Line];
-    }
-}
-
-mod object_type
+pub mod object_type
 {
     #[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
     pub enum ObjectType
     {
-        Light,
+        Light(light::Light),
         Shape(shape::Dimension),
         Empty,
     }
-    mod light
+    pub mod light
     {
         #[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
         pub enum Light
@@ -89,7 +62,7 @@ mod object_type
             Direction,
         }
     }
-    mod shape
+    pub mod shape
     {
         #[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
         pub enum Dimension
@@ -100,9 +73,16 @@ mod object_type
         #[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
         pub enum Shape2D
         {
-            Triangle,
             Square,
+            Triangle,
             Line,
+        }
+        impl Shape2D
+        {
+            pub fn elements() -> [(Self, &'static str); 3]
+            {
+                return [(Self::Square, "Square"), (Self::Triangle, "Triangle"), (Self::Line, "Line")];
+            }
         }
         #[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
         pub enum Shape3D

@@ -1,24 +1,33 @@
 use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
-use crate::{structures::flameobject::Flameobject, mapper::{self, ObjectType}};
+use crate::structures::flameobject::Flameobject;
+use crate::radio_options::object_type::{ObjectType, shape, light};
 
 
 // Either puts new shape or changes shape
 pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
 {
-    for (i, shape) in flameobject.settings.object_type.iter().enumerate()
+    match flameobject.settings.object_type
     {
-        if *shape == true
+        ObjectType::Empty => println!("todo!: Empty"),
+        ObjectType::Shape(dimension) => match dimension
         {
-            match mapper::ObjectType::value(i)
+            shape::Dimension::D2(shape) => match shape
             {
-                ObjectType::Square(_)       => square(flameobject.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
-                ObjectType::Triangle(_)     => triangle(flameobject.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
-                ObjectType::Line(_)         => println!("todo!: line()"),
+                shape::Shape2D::Square => square(flameobject.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
+                shape::Shape2D::Triangle => triangle(flameobject.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
+                shape::Shape2D::Line => println!("todo!: line()"),
             }
-            update_shape(flameobject, project_dir, objects, window, renderer);
-            break;
+            shape::Dimension::D3(shape) => match shape
+            {
+                shape::Shape3D::Cube => println!("todo!: cube()"),
+            }
+        }
+        ObjectType::Light(light)                 => match light
+        {
+            light::Light::Direction                 => println!("todo!: light()"),
         }
     }
+    update_shape(flameobject, project_dir, objects, window, renderer);
 
     fn update_shape(flameobject: &Flameobject, project_dir: &str, objects: &mut ObjectStorage, window: &Window, renderer: &mut Renderer)
     {
