@@ -1,4 +1,3 @@
-pub mod mapper;
 pub mod db;
 pub mod object_actions;
 pub mod radio_options;
