@@ -8,7 +8,7 @@ pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut
 {
     match flameobject.settings.object_type
     {
-        ObjectType::Empty => println!("todo!: Empty"),
+        ObjectType::Empty => {println!("todo!: Empty"); return},
         ObjectType::Shape(dimension) => match dimension
         {
             shape::Dimension::D2(shape) => match shape
@@ -19,12 +19,12 @@ pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut
             }
             shape::Dimension::D3(shape) => match shape
             {
-                shape::Shape3D::Cube => println!("todo!: cube()"),
+                shape::Shape3D::Cube => {println!("todo!: cube()"); return},
             }
         }
         ObjectType::Light(light)                 => match light
         {
-            light::Light::Direction                 => println!("todo!: light()"),
+            light::Light::Direction                 => {println!("todo!: light()"); return},
         }
     }
     update_shape(flameobject, project_dir, objects, window, renderer);
