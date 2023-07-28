@@ -12,17 +12,9 @@ impl GameTypeDimensions
 pub enum ViewModes{Objects, Scenes}
 impl ViewModes
 {
-    pub fn label(value: &Self) -> &'static str
+    pub fn elements() -> [(Self, &'static str); 2]
     {
-        match value
-        {
-            Self::Objects         => "Objects",
-            Self::Scenes          => "Scenes",
-        }
-    }
-    pub fn elements() -> [Self; 2]
-    {
-        return [Self::Objects, Self::Scenes];
+        return [(Self::Objects, "Objects"), (Self::Scenes, "Scenes")];
     }
 }
 
