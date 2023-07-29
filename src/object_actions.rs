@@ -8,14 +8,14 @@ pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut
 {
     match flameobject.settings.object_type
     {
-        ObjectType::Empty => {println!("todo!: Empty"); return},
+        ObjectType::Empty => return,
         ObjectType::Shape(dimension) => match dimension
         {
             shape::Dimension::D2(shape) => match shape
             {
                 shape::Shape2D::Square => square(flameobject.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
                 shape::Shape2D::Triangle => triangle(flameobject.label.clone(), ObjectSettings::default(), renderer, objects).unwrap(),
-                shape::Shape2D::Line => println!("todo!: line()"),
+                shape::Shape2D::Line => return,
             }
             shape::Dimension::D3(shape) => match shape
             {
@@ -24,7 +24,7 @@ pub fn create_shape(flameobject: &Flameobject, project_dir: &str, renderer: &mut
         }
         ObjectType::Light(light)                 => match light
         {
-            light::Light::Direction                 => {println!("todo!: light()"); return},
+            light::Light::Direction                 => return,
         }
     }
     update_shape(flameobject, project_dir, objects, window, renderer);

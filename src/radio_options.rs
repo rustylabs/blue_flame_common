@@ -48,10 +48,38 @@ pub mod object_type
     }
     impl ObjectType
     {
+        pub fn elements(object_type: Option<Self>) -> [(Self, &'static str); 3]
+        {
+            let mut list = [(Self::Light(light::Light::Direction), "Light"), (Self::Shape(shape::Dimension::D2(shape::Shape2D::Square)), "Shape"), (Self::Empty, "Empty")];
+            match object_type
+            {
+                Some(object_type) =>
+                    match object_type
+                    {
+                        Self::Light(value)     => list[0].0 = Self::Light(value),
+                        Self::Shape(value) => list[1].0 = Self::Shape(value),
+                        Self::Empty                   => {},
+                    }
+                None => return list,
+            }
+
+            /*
+            match object_type.unwrap()
+            {
+                Self::Light(value)     => list[0].0 = Self::Light(value),
+                Self::Shape(value) => list[1].0 = Self::Shape(value),
+                Self::Empty                   => {},
+            }
+            */
+
+            return list;
+        }
+        /*
         pub fn elements() -> [(Self, &'static str); 3]
         {
             return [(Self::Light(light::Light::Direction), "Light"), (Self::Shape(shape::Dimension::D2(shape::Shape2D::Square)), "Shape"), (Self::Empty, "Empty")];
         }
+        */
         pub fn current_selected_label(&self) -> &'static str
         {
             match self
@@ -68,6 +96,13 @@ pub mod object_type
         pub enum Light
         {
             Direction,
+        }
+        impl Light
+        {
+            pub fn elements() -> [(Self, &'static str); 1]
+            {
+                return [(Self::Direction, "Direction")];
+            }
         }
     }
     pub mod shape
@@ -96,6 +131,13 @@ pub mod object_type
         pub enum Shape3D
         {
             Cube,
+        }
+        impl Shape3D
+        {
+            pub fn elements() -> [(Self, &'static str); 1]
+            {
+                return [(Self::Cube, "Cube")];
+            }
         }
     }
 
