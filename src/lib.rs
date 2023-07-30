@@ -4,6 +4,22 @@ pub mod radio_options;
 pub mod structures;
 
 
+// Range of value and does not exceed it
+
+pub fn range_limiter<T: PartialOrd + Copy>(mut value: T, min: T, max: T) -> T
+{
+    if value < min
+    {
+        value = min;
+    }
+    else if value > max
+    {
+        value = max;
+    }
+
+    return value;
+}
+
 
 // Deals anything to do with file paths
 pub mod filepath_handling
