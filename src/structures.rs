@@ -25,7 +25,7 @@ impl D3Labels
 
 pub mod flameobject
 {
-    use crate::radio_options::object_type::{ObjectType, shape};
+    use crate::radio_options::object_type::{ObjectType, shape::{self, Shape3D}, self};
     use super::D3Labels;
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -40,7 +40,7 @@ pub mod flameobject
     }
     impl Flameobject
     {
-        pub fn init(id: u16) -> Self
+        pub fn init(id: u16, object_type: Option<ObjectType>) -> Self
         {
             Self
             {
@@ -49,7 +49,7 @@ pub mod flameobject
                 selected    : true,
                 //label       : (format!("Object {id}"), issues::Issues::init()),
                 label       : format!("Object {id}"),
-                settings    : Settings::init(),
+                settings    : Settings::init(object_type),
             }
         }
         pub fn change_choice(list: &mut [Self], choice_true: u16)
@@ -92,15 +92,47 @@ pub mod flameobject
     }
     impl Settings
     {
-        pub fn init() -> Self
+        pub fn init(object_type: Option<ObjectType>) -> Self
         {
+            use crate::radio_options::object_type::{light, shape};
             //let position = [0f32; 3];
             //const EMPTY: String = String::new();
-    
+            let object_type =
+            {
+                if object_type != None
+                {
+                    match object_type.unwrap()
+                    {
+                        ObjectType::Light(lights) => match lights
+                        {
+                            light::Light::Direction => ObjectType::Light(light::Light::Direction),
+                        }
+                        ObjectType::Shape(dimensions) => match dimensions
+                        {
+                            shape::Dimension::D2(shapes) => match shapes
+                            {
+                                shape::Shape2D::Square => ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
+                                shape::Shape2D::Triangle => ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Triangle)),
+                                shape::Shape2D::Line => ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Line)),
+                            }
+                            shape::Dimension::D3(shapes) => match shapes
+                            {
+                                shape::Shape3D::Cube => ObjectType::Shape(shape::Dimension::D3(shape::Shape3D::Cube)),
+                            }
+                        }
+                        ObjectType::Empty => ObjectType::Empty,
+                    }
+                }
+                else
+                {
+                    ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square))
+                }
+            };
+
             Self
             {
                 //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
-                object_type         : ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
+                object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
                 position            : D3Labels::init(0f32),
                 size                : D3Labels::init(30f32),
