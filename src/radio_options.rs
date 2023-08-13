@@ -8,6 +8,9 @@ impl GameTypeDimensions
     }
 }
 
+// When user press 'g' for example move the object based on mouse coordinates
+pub enum ObjectMouseMovement{Grab, Size, Rotation}
+
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum ViewModes{Objects, Scenes}
 impl ViewModes

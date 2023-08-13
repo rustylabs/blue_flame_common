@@ -3,9 +3,23 @@ pub mod object_actions;
 pub mod radio_options;
 pub mod structures;
 
+// Converts graphics coordinates to math coordinates, most likely this is going to take the arguments of mouse coordinates
+pub fn convert_graphic_2_math_coords(graphics_coord: (f32, f32), screen_res: (f32, f32)) -> (f32, f32)
+{
+    // 1280, 720
+
+    /*
+    X equation: coordinate - length/2
+    Y equation: (coordinate - length/2) * -1
+    */
+
+
+
+    return (graphics_coord.0 - screen_res.0/2f32, (graphics_coord.1 - screen_res.1/2f32) * -1f32);
+}
+
 
 // Range of value and does not exceed it
-
 pub fn range_limiter<T: PartialOrd + Copy>(mut value: T, min: T, max: T) -> T
 {
     if value < min
