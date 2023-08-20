@@ -12,12 +12,12 @@ impl GameTypeDimensions
 pub enum ObjectMouseMovement{Grab, Size, Rotation}
 
 #[derive(PartialEq, Debug, Clone, Copy)]
-pub enum ViewModes{Objects, Scenes}
+pub enum ViewModes{Objects, Scenes, Blueprints}
 impl ViewModes
 {
-    pub fn elements() -> [(Self, &'static str); 2]
+    pub fn elements() -> [(Self, &'static str); 3]
     {
-        return [(Self::Objects, "Objects"), (Self::Scenes, "Scenes")];
+        return [(Self::Objects, "Objects"), (Self::Scenes, "Scenes"), (Self::Blueprints, "Blueprints")];
     }
 }
 
