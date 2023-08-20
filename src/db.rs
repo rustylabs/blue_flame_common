@@ -22,7 +22,7 @@ pub mod scene
             // Destroys all shapes from the scene
             for flameobject in flameobjects.iter_mut()
             {
-                crate::object_actions::delete_shape(&flameobject.label, objects);
+                crate::object_actions::delete_shape(&flameobject.settings.label, objects);
             }
         }
         pub fn create_shapes(flameobjects: &mut Vec<Flameobject>, project_dir: &str,
@@ -30,7 +30,7 @@ pub mod scene
         {
             for flameobject in flameobjects.iter()
             {
-                crate::object_actions::create_shape(flameobject, project_dir, renderer, objects, window);
+                crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
                 /*
                 for i in 0..flameobject.1.object_type.len()
                 {

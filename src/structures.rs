@@ -35,7 +35,6 @@ pub mod flameobject
         pub visible     : bool,
         pub selected    : bool,
         //label       : (String, issues::Issues),
-        pub label       : String, // "Object 0", "Object 1" etc
         pub settings    : Settings,
     }
     impl Flameobject
@@ -48,8 +47,8 @@ pub mod flameobject
                 visible     : true,
                 selected    : true,
                 //label       : (format!("Object {id}"), issues::Issues::init()),
-                label       : format!("Object {id}"),
-                settings    : Settings::init(object_type),
+
+                settings    : Settings::init(id, object_type),
             }
         }
         pub fn change_choice(list: &mut [Self], choice_true: u16)
@@ -79,6 +78,7 @@ pub mod flameobject
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Settings
     {
+        pub label       : String, // "Object 0", "Object 1" etc
         //pub object_type         : [bool; 3],
         pub object_type         : ObjectType,
         //position            : [object_settings::three_d_lables::Fields; 3],
@@ -92,7 +92,7 @@ pub mod flameobject
     }
     impl Settings
     {
-        pub fn init(object_type: Option<ObjectType>) -> Self
+        pub fn init(id: u16, object_type: Option<ObjectType>) -> Self
         {
             use crate::radio_options::object_type::{light, shape};
             //let position = [0f32; 3];
@@ -131,6 +131,7 @@ pub mod flameobject
 
             Self
             {
+                label               : format!("Object {id}"),
                 //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
                 object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
