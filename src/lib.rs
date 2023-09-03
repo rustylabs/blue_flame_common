@@ -3,6 +3,37 @@ pub mod object_actions;
 pub mod radio_options;
 pub mod structures;
 
+// Like Add or delete etc
+pub mod emojis
+{
+    pub struct Emojis
+    {
+        pub trash: char,
+        pub add: char,
+        pub settings: char,
+        pub cancel: char,
+        pub save: char,
+        pub eye: char,
+        pub tick: char,
+    }
+    impl Emojis
+    {
+        pub fn init() -> Self
+        {
+            Self
+            {
+                trash: '🗑',
+                add: '➕',
+                settings: '⚙',
+                cancel: '⛔',
+                save: '💾',
+                eye: '👁',
+                tick: '✅',
+            }
+        }
+    }
+}
+
 // Converts graphics coordinates to math coordinates, most likely this is going to take the arguments of mouse coordinates
 pub fn convert_graphic_2_math_coords(graphics_coord: (f32, f32), screen_res: (f32, f32)) -> (f32, f32)
 {
