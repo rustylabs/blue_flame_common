@@ -15,6 +15,7 @@ pub mod emojis
         pub save: char,
         pub eye: char,
         pub tick: char,
+        pub load: char,
     }
     impl Emojis
     {
@@ -29,6 +30,7 @@ pub mod emojis
                 save: '💾',
                 eye: '👁',
                 tick: '✅',
+                load: '↻',
             }
         }
     }

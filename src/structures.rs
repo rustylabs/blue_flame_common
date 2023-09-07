@@ -1,4 +1,4 @@
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct D3Labels
 {
     pub x: f32,
@@ -75,7 +75,7 @@ pub mod flameobject
         }
         // Checks for warnings and errors for labels and assigns the Issues variables appropriately
     }
-    #[derive(Debug, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
     pub struct Settings
     {
         pub label       : String, // "Object 0", "Object 1" etc
@@ -145,7 +145,7 @@ pub mod flameobject
         }
     }
 
-    #[derive(Debug, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
     pub struct Texture
     {
         pub file_location   : String,
