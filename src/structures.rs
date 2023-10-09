@@ -78,7 +78,8 @@ pub mod flameobject
     #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
     pub struct Settings
     {
-        pub label       : String, // "Object 0", "Object 1" etc
+        pub label               : String, // "Object 0", "Object 1" etc
+        pub blueprint_label     : Option<String>, // Used as key to modify all objects that has this key
         //pub object_type         : [bool; 3],
         pub object_type         : ObjectType,
         //position            : [object_settings::three_d_lables::Fields; 3],
@@ -132,6 +133,7 @@ pub mod flameobject
             Self
             {
                 label               : format!("Object {id}"),
+                blueprint_label     : None,
                 //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
                 object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
