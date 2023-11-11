@@ -83,15 +83,7 @@ pub mod object_type
             return [(Self::Light(light::Light::Direction), "Light"), (Self::Shape(shape::Dimension::D2(shape::Shape2D::Square)), "Shape"), (Self::Empty, "Empty")];
         }
         */
-        pub fn current_selected_label(&self) -> &'static str
-        {
-            match self
-            {
-                Self::Empty         => "Empty",
-                Self::Light(_)      => "Light",
-                Self::Shape(_)      => "Shape",
-            }
-        }
+
     }
     pub mod light
     {

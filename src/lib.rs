@@ -2,6 +2,7 @@ pub mod db;
 pub mod object_actions;
 pub mod radio_options;
 pub mod structures;
+pub mod undo_redo;
 
 // Like Add or delete etc
 pub mod emojis

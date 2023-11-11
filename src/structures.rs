@@ -51,6 +51,16 @@ pub mod flameobject
                 settings    : Settings::init(id, object_type),
             }
         }
+        pub fn copy(&self) -> Self
+        {
+            Self
+            {
+                id          : self.id,
+                visible     : self.visible,
+                selected    : self.selected,
+                settings    : self.settings.clone(),
+            }
+        }
         pub fn change_choice(list: &mut [Self], choice_true: u16)
         {
             for (i, item) in list.iter_mut().enumerate()
@@ -65,13 +75,42 @@ pub mod flameobject
                 }
             }
         }
-        // When user deletes the objects, we need to re calculate ids
-        pub fn recalculate_id(list: &mut  [Self])
+        // When user deletes the objects, we need to re calculate ids, Most likely we will fuck this off in the near future
+        pub fn recalculate_id(list: &mut [Self])
         {
             for (i, item) in list.iter_mut().enumerate()
             {
                 item.id = i as u16;
             }
+        }
+        pub fn get_available_id(list: &mut [Self]) -> u16
+        {
+            let mut lowest_number: u16 = 0; // For unused lowest number used as ID
+            let mut found_number = false;
+            let len = list.len();
+
+            if len == 0
+            {
+                return lowest_number;
+            }
+
+            while found_number == false
+            {
+                for (i, item) in list.iter().enumerate()
+                {
+                    if item.id == lowest_number
+                    {
+                        lowest_number += 1;
+                        break;
+                    }
+                    // Last element and found no matching numbers
+                    if i == (len - 1)
+                    {
+                        found_number = true;
+                    }
+                }
+            }
+            return lowest_number;
         }
         // Checks for warnings and errors for labels and assigns the Issues variables appropriately
     }
@@ -172,6 +211,7 @@ pub mod scene
 {
     use crate::radio_options::GameTypeDimensions;
     use crate::structures::flameobject::Flameobject;
+    use crate::undo_redo;
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Scene
@@ -180,6 +220,7 @@ pub mod scene
         pub label               : String,
         pub selected            : bool,
         pub settings            : Settings,
+        pub undo_redo           : undo_redo::UndoRedo,
         pub flameobjects        : Vec<Flameobject>,
     }
     impl Scene
@@ -192,6 +233,7 @@ pub mod scene
                 label               : format!("Scene {id}"),
                 selected            : true,
                 settings            : Settings::default(),
+                undo_redo           : undo_redo::UndoRedo{length_size: 5, actions: Vec::new()},
                 flameobjects        : Vec::new(),
             }
         }
@@ -224,6 +266,7 @@ pub mod scene
         pub background_color        : u32,
         pub high_power_mode         : bool,
         pub game_type_dimensions    : GameTypeDimensions,
+        pub undo_redo_length        : u16,
     }
     impl Settings
     {
@@ -234,6 +277,7 @@ pub mod scene
                 background_color        : 0x4d4d4d,         // Similar to Godot's background color for 2D
                 high_power_mode         : true,
                 game_type_dimensions    : GameTypeDimensions::D2,
+                undo_redo_length        : 36,
             }
         }
     }
