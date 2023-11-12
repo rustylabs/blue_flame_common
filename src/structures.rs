@@ -31,12 +31,11 @@ pub mod flameobject
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Flameobject
     {
-        pub id              : u16,
-        pub visible         : bool,
-        pub selected        : bool,
-        pub parent_selected : bool,
+        pub id          : u16,
+        pub visible     : bool,
+        pub selected    : bool,
         //label       : (String, issues::Issues),
-        pub settings        : Settings,
+        pub settings    : Settings,
     }
     impl Flameobject
     {
@@ -45,23 +44,21 @@ pub mod flameobject
             Self
             {
                 id,
-                visible         : true,
-                selected        : true,
-                parent_selected : true,
+                visible     : true,
+                selected    : true,
                 //label       : (format!("Object {id}"), issues::Issues::init()),
 
-                settings        : Settings::init(id, object_type),
+                settings    : Settings::init(id, object_type),
             }
         }
         pub fn copy(&self) -> Self
         {
             Self
             {
-                id              : self.id,
-                visible         : self.visible,
-                selected        : self.selected,
-                parent_selected : self.parent_selected,
-                settings        : self.settings.clone(),
+                id          : self.id,
+                visible     : self.visible,
+                selected    : self.selected,
+                settings    : self.settings.clone(),
             }
         }
         pub fn change_choice(list: &mut [Self], choice_true: u16)
