@@ -17,6 +17,7 @@ pub mod emojis
         pub eye: char,
         pub tick: char,
         pub load: char,
+        pub undo_redo: UndoRedo,
     }
     impl Emojis
     {
@@ -32,6 +33,27 @@ pub mod emojis
                 eye: '👁',
                 tick: '✅',
                 load: '↻',
+                undo_redo: UndoRedo::init(),
+            }
+        }
+    }
+    pub struct UndoRedo
+    {
+        pub undo: char,
+        pub redo: char,
+    }
+    impl UndoRedo
+    {
+        pub fn init() -> Self
+        {
+            Self
+            {
+                /*
+                undo: '↶',
+                redo: '↷',
+                */
+                undo: '↺',
+                redo: '↻',
             }
         }
     }
