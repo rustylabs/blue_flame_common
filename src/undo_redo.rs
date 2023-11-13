@@ -7,7 +7,7 @@ use crate::structures::flameobject;
 pub enum Action
 {
     Create(object_type::ObjectType),
-    Update(flameobject::Flameobject),
+    Update(Vec<flameobject::Flameobject>),
     Delete((u16 /*flameobject_selected_parent_idx*/, Vec<(flameobject::Flameobject, u16 /*index*/)>)),
 }
 
