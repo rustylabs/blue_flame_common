@@ -8,7 +8,7 @@ pub enum Action
 {
     Create(object_type::ObjectType),
     Update(flameobject::Flameobject),
-    Delete(Vec<(flameobject::Flameobject, u16)>),
+    Delete((u16 /*flameobject_selected_parent_idx*/, Vec<(flameobject::Flameobject, u16 /*index*/)>)),
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -49,14 +49,14 @@ impl UndoRedo
         }
     }
     // When user presses ctrl+Z
-    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, flameobjects_selected_parent_idx: &mut u16,
+    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, flameobject_selected_parent_idx: &mut u16,
         project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
         println!("undo called!");
 
         let len = self.actions.len();
         // Prevent buffer overflow; No more undos remaining
-        if len <= 0
+        if len <= 0 && flameobjects.len() <= 0
         {
             return;
         }
@@ -66,15 +66,23 @@ impl UndoRedo
             Action::Create(values) =>
             {
                 let flameobjects_len = flameobjects.len();
-                crate::object_actions::delete_shape(&flameobjects[flameobjects_len - 1].settings.label, objects);
-                flameobjects.pop();
-                if flameobjects.len() > 0
+                if flameobjects_len > 0
                 {
-                    *flameobjects_selected_parent_idx = flameobjects.len() as u16 - 1
+                    crate::object_actions::delete_shape(&flameobjects[flameobjects_len - 1].settings.label, objects);
                 }
                 else
                 {
-                    *flameobjects_selected_parent_idx = 0;
+                    return;
+                }
+                
+                flameobjects.pop();
+                if flameobjects.len() > 0
+                {
+                    *flameobject_selected_parent_idx = flameobjects.len() as u16 - 1
+                }
+                else
+                {
+                    *flameobject_selected_parent_idx = 0;
                 }
                 
             }
@@ -84,7 +92,7 @@ impl UndoRedo
             }
             Action::Delete(values) =>
             {
-                for value in values.iter().rev()
+                for value in values.1.iter().rev()
                 {
                     let flameobjects_len = flameobjects.len();
                     // If not out of range
@@ -98,6 +106,7 @@ impl UndoRedo
                     }
                     crate::object_actions::create_shape(&flameobjects[value.1 as usize].settings, project_dir, renderer, objects, window);
                 }
+                *flameobject_selected_parent_idx = values.0;
             }
         }
     }
