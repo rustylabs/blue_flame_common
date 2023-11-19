@@ -2,12 +2,13 @@ use crate::radio_options::object_type;
 use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
 use serde::de::value;
 use crate::structures::flameobject;
+use crate::structures::StringBackups;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub enum Action
 {
     Create(object_type::ObjectType),
-    Update(Vec<flameobject::Flameobject>),
+    Update((flameobject::Settings, u16 /*flameobject_selected_parent_idx*/)),
     Delete((u16 /*flameobject_selected_parent_idx*/, Vec<(flameobject::Flameobject, u16 /*index*/)>)),
 }
 
@@ -35,11 +36,11 @@ impl UndoRedo
             Action::Create(values) =>
             {
                 self.actions.push(Action::Create(values));
-                println!("UndoRedo: {:?}", self.actions);
             }
             Action::Update(values) =>
             {
                 self.actions.push(Action::Update(values));
+                //println!("len: {}, values: {:?}", self.actions.len(), self.actions);
             }
             Action::Delete(values) =>
             {
@@ -49,21 +50,21 @@ impl UndoRedo
         }
     }
     // When user presses ctrl+Z
-    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, flameobject_selected_parent_idx: &mut u16,
+    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, string_backups: &mut StringBackups, flameobject_selected_parent_idx: &mut u16,
         project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
-        println!("undo called!");
+        //println!("undo called!");
 
         let len = self.actions.len();
         // Prevent buffer overflow; No more undos remaining
-        if len <= 0 && flameobjects.len() <= 0
+        if len <= 0 || flameobjects.len() <= 0
         {
             return;
         }
         // Get previous action and undo on that
         match &self.actions[len-1]
         {
-            Action::Create(values) =>
+            Action::Create(_) =>
             {
                 let flameobjects_len = flameobjects.len();
                 if flameobjects_len > 0
@@ -88,7 +89,11 @@ impl UndoRedo
             }
             Action::Update(values) =>
             {
-
+                //println!("undo Update called!");
+                crate::object_actions::delete_shape(&flameobjects[values.1 as usize].settings.label, objects);
+                flameobjects[values.1 as usize].settings = values.0.clone();
+                string_backups.label = flameobjects[values.1 as usize].settings.label.clone();
+                crate::object_actions::create_shape(&flameobjects[values.1 as usize].settings, project_dir, renderer, objects, window);
             }
             Action::Delete(values) =>
             {

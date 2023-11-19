@@ -23,6 +23,11 @@ impl D3Labels
     }
 }
 
+pub struct StringBackups
+{
+    pub texture     : String,
+    pub label       : String,
+}
 pub mod flameobject
 {
     use crate::radio_options::object_type::{ObjectType, shape::{self, Shape3D}, self};
@@ -184,6 +189,7 @@ pub mod flameobject
                 color               : [1f32; 4],
             }
         }
+    
     }
 
     #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
