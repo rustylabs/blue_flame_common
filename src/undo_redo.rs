@@ -15,8 +15,9 @@ pub enum Action
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct UndoRedo
 {
-    pub length_size     : u16,
+    pub length_size     : u16,      // This is the limit of how many vector elements you are allowed to store before poping from the beggining
     pub actions         : Vec<Action>,
+    pub current_idx     : u16,
 }
 impl UndoRedo
 {
@@ -31,6 +32,16 @@ impl UndoRedo
     pub fn save_action(&mut self, action: Action)
     {
         self.pop_from_stack_determine();
+        // If we have gone back and we are then adding new stuff, then pop everything ahead before adding
+        if self.actions.len() > 0 && (self.current_idx < self.actions.len() as u16 - 1)
+        {
+            //println!("(self.actions.len() as u16 - 1) - self.current_idx = {}\tself.actions.len(): {}", (self.actions.len() as u16 - 1) - self.current_idx, self.actions.len());
+            for _i in 0..(self.actions.len() as u16 - 1) - self.current_idx
+            {
+                self.actions.pop();
+                //println!("iteration for popping undoredo: {}", _i);
+            }
+        }
         match action
         {
             Action::Create(values) =>
@@ -48,6 +59,8 @@ impl UndoRedo
                 //println!("UndoRedo Delete: {:?}", self.actions);
             }
         }
+        self.current_idx = self.actions.len() as u16 - 1;
+        //println!("self.current_idx: {}", self.current_idx);
     }
     // When user presses ctrl+Z
     pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, string_backups: &mut StringBackups, flameobject_selected_parent_idx: &mut u16,
@@ -56,13 +69,13 @@ impl UndoRedo
         //println!("undo called!");
 
         let len = self.actions.len();
-        // Prevent buffer overflow; No more undos remaining
+        // Prevent buffer overflow; If no more undos remaining, return
         if len <= 0 || flameobjects.len() <= 0
         {
             return;
         }
         // Get previous action and undo on that
-        match &self.actions[len-1]
+        match &self.actions[self.current_idx as usize]
         {
             Action::Create(_) =>
             {
@@ -114,6 +127,12 @@ impl UndoRedo
                 *flameobject_selected_parent_idx = values.0;
             }
         }
+        if self.current_idx > 0
+        {
+            self.current_idx -= 1;
+        }
+        //println!("undo self.current_idx: {}", self.current_idx);
+        
     }
     pub fn redo(&mut self)
     {
@@ -122,6 +141,7 @@ impl UndoRedo
     pub fn clear_buffer(&mut self)
     {
         self.actions = Vec::new();
+        self.current_idx = 0;
         println!("undo_redo buf is cleared!: {:?}", self.actions);
     }
 }
