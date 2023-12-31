@@ -4,6 +4,29 @@ pub mod radio_options;
 pub mod structures;
 pub mod undo_redo;
 
+pub struct EditorSettings
+{
+    pub width               : f32,
+    pub height              : f32,
+    pub range               : f32,
+    pub slider_speed        : f32,
+    pub undoredo_bufsize    : u16,
+}
+impl EditorSettings
+{
+    pub fn init() -> Self
+    {
+        Self
+        {
+            width               : 250f32,
+            height              : 900f32,
+            range               : 900_000_000f32,
+            slider_speed        : 0.01f32,
+            undoredo_bufsize    : 2,
+        }
+    }
+}
+
 // Like Add or delete etc
 pub mod emojis
 {
