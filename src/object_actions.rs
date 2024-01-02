@@ -22,9 +22,9 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
                 shape::Shape3D::Cube => {println!("todo!: cube()"); return},
             }
         }
-        ObjectType::Light(light)                 => match light
+        ObjectType::Light(light) => match light
         {
-            light::Light::Direction                 => return,
+            light::Light::Direction => return,
         }
     }
     update_shape(flameobject_settings, project_dir, objects, window, renderer);

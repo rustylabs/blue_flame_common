@@ -23,6 +23,28 @@ impl D3Labels
     }
 }
 
+// i.e. is it color that has changed, position etc!
+#[derive(Debug)]
+pub enum WhatChanged{Color, Position, Rotation}
+
+// Used for widgets such as color as dumbass egui devs can't be fucked to have an event to determine if its closed or not
+#[derive(Debug)]
+pub struct WidgetFunctions
+{
+    pub is_opened           : bool,
+    //has_changed         : bool,
+    pub has_changed         : Option<WhatChanged>,
+    pub flameobject_old     : Option<flameobject::Settings>,
+}
+impl WidgetFunctions
+{
+    pub fn clear_everything(&mut self)
+    {
+        self.is_opened = false;
+        self.has_changed = None;
+        self.flameobject_old = None;
+    }
+}
 pub struct StringBackups
 {
     pub texture     : String,
