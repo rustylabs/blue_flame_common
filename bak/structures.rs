@@ -248,7 +248,6 @@ pub mod scene
         pub id                  : u16,
         pub label               : String,
         pub flameobject_selected_parent_idx : u16,
-        pub flameobject_highest_id  : u16,  // Highest id number that is used
         pub selected            : bool,
         pub settings            : Settings,
         pub undo_redo           : undo_redo::UndoRedo,
@@ -262,11 +261,10 @@ pub mod scene
             {
                 id,
                 label               : format!("Scene {id}"),
-                flameobject_highest_id  : 0,
                 flameobject_selected_parent_idx : 0,
                 selected            : true,
                 settings            : Settings::default(),
-                undo_redo           : undo_redo::UndoRedo{actions: Vec::new(), current_idx: None},
+                undo_redo           : undo_redo::UndoRedo{actions: Vec::new(), current_idx: 0},
                 flameobjects        : Vec::new(),
             }
         }

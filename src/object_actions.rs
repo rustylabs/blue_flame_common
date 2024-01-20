@@ -62,6 +62,7 @@ pub mod update_shape
     use blue_engine::{ObjectStorage, Window, Renderer};
     use crate::{structures::flameobject::{Flameobject, self}};
 
+
     pub fn size(flameobject_settings: &flameobject::Settings, objects: &mut ObjectStorage, window: &Window)
     {
         objects
@@ -74,7 +75,8 @@ pub mod update_shape
         objects
             .get_mut(&flameobject_settings.label)
             .unwrap()
-            .position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
+            .set_position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
+            //.position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
     }
     pub fn color(flameobject_settings: &flameobject::Settings, objects: &mut ObjectStorage)
     {
