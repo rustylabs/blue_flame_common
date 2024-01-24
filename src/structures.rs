@@ -266,7 +266,7 @@ pub mod scene
                 flameobject_selected_parent_idx : 0,
                 selected            : true,
                 settings            : Settings::default(),
-                undo_redo           : undo_redo::UndoRedo{actions: Vec::new(), current_idx: None},
+                undo_redo           : undo_redo::UndoRedo{actions: Vec::new(), current_idx: (None, true)},
                 flameobjects        : Vec::new(),
             }
         }

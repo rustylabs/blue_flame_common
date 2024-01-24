@@ -20,7 +20,7 @@ pub struct UndoRedo
 {
     pub actions         : Vec<Action>,
     //pub current_idx     : u16,
-    pub current_idx     : Option<u16>,
+    pub current_idx     : (Option<u16>, bool /*If executing redo for the first time, this will be true, then false*/),
 }
 impl UndoRedo
 {
@@ -35,10 +35,11 @@ impl UndoRedo
     }
     pub fn save_action(&mut self, action: Action, editor_settings: &EditorSettings)
     {
+        self.current_idx.1 = true;
         self.pop_from_stack_determine(editor_settings);
 
         // If we have gone back and we are then adding new stuff, then pop everything ahead before adding
-        if let Some(current_idx) = self.current_idx
+        if let Some(current_idx) = self.current_idx.0
         {
             if self.actions.len() > 0 && (current_idx < self.actions.len() as u16 - 1)
             {
@@ -69,7 +70,7 @@ impl UndoRedo
                 //println!("UndoRedo Delete: {:?}", self.actions);
             }
         }
-        self.current_idx = Some(self.actions.len() as u16 - 1);
+        self.current_idx.0 = Some(self.actions.len() as u16 - 1);
 
         //println!("\n\nself.current_val: {:?}\n\n\nself.actions: {:?}", self.current_val, self.actions);
         //println!("self.actions.len(): {}\t\teditor_settings.undoredo_bufsize: {}", self.actions.len(), editor_settings.undoredo_bufsize);
@@ -85,16 +86,21 @@ impl UndoRedo
         {
             return;
         }
-        if let None = self.current_idx
+        if let None = self.current_idx.0
         {   
             return;
         }
-
+        self.current_idx.1 = true;
         //println!("\n\nself.current_val: {:?}\n\n\nself.actions: {:?}", self.current_val, self.actions);
         // Do the current idx action, then go back
         let mut make_current_idx_none = false;
-        if let Some(ref mut current_idx) = self.current_idx
+        if let Some(ref mut current_idx) = self.current_idx.0
         {
+            // If current_idx > actions then reduce it by 1 otherwise overflow would happen, this is caused by redo incrementing it again by 1 right at the end
+            if *current_idx > self.actions.len() as u16 - 1
+            {
+                *current_idx -= 1;
+            }
             match &self.actions[*current_idx as usize]
             {
                 // Delete
@@ -163,7 +169,7 @@ impl UndoRedo
         }
         if make_current_idx_none == true
         {
-            self.current_idx = None;
+            self.current_idx.0 = None;
         }
 
 
@@ -177,27 +183,55 @@ impl UndoRedo
 
         if self.actions.len() <= 0 {return;}
 
-        // if current_idx is not behind the length then we can redo
-        //if self.current_idx < self.actions.len() as u16 - 1 {return;}
-        // If there is something in self.current_val then we can redo something
+        // If we have already incremented do not increment
+        //let mut dont_increment = false;
 
-        if let Some(current_idx) = self.current_idx
+
+        // if current_idx is not behind the length then we can redo
+        // if self.current_idx < self.actions.len() as u16 - 1 {return;}
+        // If there is something in self.current_val then we can redo something
+        if let Some(current_idx) = self.current_idx.0
         {
             // If nothing else to redo then return
-            if current_idx >= self.actions.len() as u16 - 1
+            if current_idx > self.actions.len() as u16 - 1
             {
                 return;
             }
         }
-        // If its None for current_idx start from position 0 then
-        else if let None = self.current_idx
+
+        // If we are executing redo for the first time, make this false and if we are doing a create or delete on the current_idx, then increment by 1
+        if self.current_idx.1 == true
         {
-            self.current_idx = Some(0);
+            if let Some(ref mut current_idx) = self.current_idx.0
+            {
+                match self.actions[*current_idx as usize]
+                {
+                    Action::Create(_) => *current_idx += 1,
+                    Action::Delete(_) => *current_idx += 1,
+                    Action::Update(_) => {},
+                }
+            }
+            // If its None, then we need to assign it to Some(0) so we can get started to redo
+            else if let None = self.current_idx.0
+            {
+                self.current_idx.0 = Some(0);
+            }
+            self.current_idx.1 = false;
+            //dont_increment = true;
+        }
+
+
+
+
+        // If its None for current_idx start from position 0 then
+        else if let None = self.current_idx.0
+        {
+            self.current_idx.0 = Some(0);
         }
 
         //println!("self.actions: {:?}", self.actions);
         // Get previous action and redo on that and then increment current_idx by 1
-        if let Some(ref mut current_idx) = self.current_idx
+        if let Some(ref mut current_idx) = self.current_idx.0
         {
             match &self.actions[*current_idx as usize]
             {
@@ -239,13 +273,18 @@ impl UndoRedo
                 }
                 Action::Update(values) =>
                 {
+                    for flameobject in flameobjects.iter_mut()
+                    {
+                        if flameobject.id == values.2
+                        {
+                            crate::object_actions::delete_shape(&flameobject.settings.label, objects);
+                            flameobject.settings = values.1.clone();
+                            //string_backups.label = flameobjects[values.2 as usize].settings.label.clone();
+                            crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
+                        }
+                    }
 
-                    /*
-                    crate::object_actions::delete_shape(&flameobjects[values.2 as usize].settings.label, objects);
-                    flameobjects[values.2 as usize].settings = values.0.clone();
-                    string_backups.label = flameobjects[values.2 as usize].settings.label.clone();
-                    crate::object_actions::create_shape(&flameobjects[values.2 as usize].settings, project_dir, renderer, objects, window);
-                    */
+
                 }
                 Action::Delete(_) =>
                 {
@@ -253,6 +292,12 @@ impl UndoRedo
                 }
             }
             *current_idx += 1;
+            /*
+            if dont_increment == false
+            {
+                *current_idx += 1;
+            }
+            */
         }
 
         
@@ -261,7 +306,7 @@ impl UndoRedo
     pub fn clear_buffer(&mut self)
     {
         self.actions = Vec::new();
-        self.current_idx = None;
+        self.current_idx = (None, true);
         println!("undo_redo buf is cleared!: {:?}", self.actions);
     }
 }
