@@ -1,10 +1,7 @@
-use crate::object_actions::create_shape;
 use crate::radio_options::object_type;
 use blue_engine::{Renderer, ObjectStorage, Window};
-use serde::de::value;
 use crate::structures::flameobject::{self, Flameobject};
 use crate::EditorSettings;
-use crate::structures::{StringBackups, scene::Scene, WidgetFunctions};
 
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -78,11 +75,12 @@ impl UndoRedo
     }
     // When user presses ctrl+Z    // 
     // Read the current idx and then go back is how it should work
-    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, string_backups: &mut StringBackups, flameobject_selected_parent_idx: &mut u16,
+    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>,
         project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
+        //println!("self.actions.len(): {}, flameobjects.len(): {}", self.actions.len(), flameobjects.len());
         // Prevent buffer overflow; If no more undos remaining, return
-        if self.actions.len() <= 0 || flameobjects.len() <= 0
+        if self.actions.len() <= 0
         {
             return;
         }
@@ -106,6 +104,11 @@ impl UndoRedo
                 // Delete
                 Action::Create((_, id)) =>
                 {
+                    // Prevent out of bounds issue
+                    if flameobjects.len() <= 0
+                    {
+                        return;
+                    }
                     let mut remove_idx: usize = 0;
                     for (i, flameobject) in flameobjects.iter_mut().enumerate()
                     {
@@ -120,6 +123,11 @@ impl UndoRedo
                 }
                 Action::Update(values) =>
                 {
+                    // Prevent out of bounds issue
+                    if flameobjects.len() <= 0
+                    {
+                        return;
+                    }
                     // Put the old value into flameobject
                     for flameobject in flameobjects.iter_mut()
                     {
@@ -137,25 +145,6 @@ impl UndoRedo
                 {
                     flameobjects.push(values.copy());
                     crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, renderer, objects, window);
-                    /*
-                    for value in values.1.iter().rev()
-                    {
-                        let flameobjects_len = flameobjects.len();
-                        // If not out of range
-                        if !(flameobjects_len > 0 && value.1 > flameobjects_len as u16 - 1)
-                        {
-                            flameobjects.insert(value.1 as usize, value.0.copy());
-                        }
-                        else
-                        {
-                            flameobjects.push(value.0.copy());
-                        }
-                        crate::object_actions::create_shape(&flameobjects[value.1 as usize].settings, project_dir, renderer, objects, window);
-                    }
-                    *flameobject_selected_parent_idx = values.0;
-    
-                    if self.current_idx > 0 {self.current_idx -= 1;}
-                    */
                 }
             }
             if *current_idx > 0
@@ -176,8 +165,7 @@ impl UndoRedo
         //println!("undo self.current_idx: {}", self.current_idx);
         
     }
-    pub fn redo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, string_backups: &mut StringBackups, flameobject_selected_parent_idx: &mut u16, widget_functions: &mut WidgetFunctions, project_dir: &str, editor_settings: &EditorSettings,
-        renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
+    pub fn redo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
         //println!("self.actions: {:?}", self.actions);
 
@@ -239,37 +227,6 @@ impl UndoRedo
                 {
                     flameobjects.push(flameobject::Flameobject::init(values.1, Some(values.0)));
                     crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, renderer, objects, window);
-                    /*
-                    let len = flameobjects.len() as u16;
-                    let id = flameobject::Flameobject::get_available_id(flameobjects);
-                    //println!("id: {}", id);
-            
-                    flameobjects.push(flameobject::Flameobject::init(id, Some(values.0)));
-                    flameobject::Flameobject::change_choice(flameobjects, len);
-                    *flameobject_selected_parent_idx = flameobjects.len() as u16 - 1;
-                    crate::object_actions::create_shape(&flameobjects[*flameobject_selected_parent_idx as usize].settings, project_dir, renderer, objects, window);
-                    string_backups.label = flameobjects[*flameobject_selected_parent_idx as usize].settings.label.clone();
-                    /*
-                    for (i, flameobject) in scene.flameobjects.iter().enumerate()
-                    {
-                        if flameobject.selected == true
-                        {
-                            scene.flameobject_selected_parent_idx = i as u16;
-                            blue_flame_common::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
-                        }
-                    }
-                    */
-            
-                    if flameobjects.len() > 0
-                    {
-                        widget_functions.flameobject_old = Some(flameobjects[flameobjects.len() - 1].settings.clone());
-                    }
-                    else
-                    {
-                        widget_functions.flameobject_old = None;
-                    }
-                    self.current_idx += 1;
-                    */
                 }
                 Action::Update(values) =>
                 {
@@ -283,12 +240,20 @@ impl UndoRedo
                             crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
                         }
                     }
-
-
                 }
-                Action::Delete(_) =>
+                // Delete the object
+                Action::Delete(values) =>
                 {
-
+                    crate::object_actions::delete_shape(&values.settings.label, objects);
+                    let mut remove_idx: usize = 0;
+                    for (i, flameobject) in flameobjects.iter_mut().enumerate()
+                    {
+                        if flameobject.id == values.id
+                        {
+                            remove_idx = i;
+                        }
+                    }
+                    flameobjects.remove(remove_idx);
                 }
             }
             *current_idx += 1;
