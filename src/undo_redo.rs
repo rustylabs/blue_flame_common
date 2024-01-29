@@ -1,6 +1,7 @@
 use crate::radio_options::object_type;
 use blue_engine::{Renderer, ObjectStorage, Window};
 use crate::structures::flameobject::{self, Flameobject};
+use crate::structures::WidgetFunctions;
 use crate::EditorSettings;
 
 
@@ -17,7 +18,7 @@ pub struct UndoRedo
 {
     pub actions         : Vec<Action>,
     //pub current_idx     : u16,
-    pub current_idx     : (Option<u16>, bool /*If executing redo for the first time, this will be true, then false*/),
+    pub current_idx     : (Option<u16>, bool /*If executing redo for the first time, this will be true, then false*/)
 }
 impl UndoRedo
 {
@@ -32,22 +33,25 @@ impl UndoRedo
     }
     pub fn save_action(&mut self, action: Action, editor_settings: &EditorSettings)
     {
-        self.current_idx.1 = true;
         self.pop_from_stack_determine(editor_settings);
-
         // If we have gone back and we are then adding new stuff, then pop everything ahead before adding
         if let Some(current_idx) = self.current_idx.0
         {
-            if self.actions.len() > 0 && (current_idx < self.actions.len() as u16 - 1)
+            let actions_len = self.actions.len() as u16 - 1;
+            //println!("\n-----save_action current_idx: {}, actions.len(): {}", current_idx, self.actions.len());
+            if self.actions.len() > 0 && current_idx <= actions_len && self.current_idx.1 == false /*If we just did a redo*/
             {
                 //println!("(self.actions.len() as u16 - 1) - self.current_idx = {}\tself.actions.len(): {}", (self.actions.len() as u16 - 1) - self.current_idx, self.actions.len());
-                for _i in 0..(self.actions.len() as u16 - 1) - current_idx
+                for _i in 0..actions_len - current_idx +1 /*Remove the current idx as well*/
                 {
                     self.actions.pop();
+                    //println!("After pop: {:?}", self.actions);
                     //println!("iteration for popping undoredo: {}", _i);
                 }
             }
         }
+
+        self.current_idx.1 = true;
 
         match action
         {
@@ -59,6 +63,7 @@ impl UndoRedo
             {
                 //println!("\nvalues: {:?}\n\n--------", values);
                 self.actions.push(Action::Update(values));
+                //println!("After push: {:?}", self.actions);
                 //println!("len: {}, values: {:?}", self.actions.len(), self.actions);
             }
             Action::Delete(values) =>
@@ -68,6 +73,7 @@ impl UndoRedo
             }
         }
         self.current_idx.0 = Some(self.actions.len() as u16 - 1);
+        //println!("\n----- save_action current_idx:{:?}", self.current_idx);
 
         //println!("\n\nself.current_val: {:?}\n\n\nself.actions: {:?}", self.current_val, self.actions);
         //println!("self.actions.len(): {}\t\teditor_settings.undoredo_bufsize: {}", self.actions.len(), editor_settings.undoredo_bufsize);
@@ -75,7 +81,7 @@ impl UndoRedo
     }
     // When user presses ctrl+Z    // 
     // Read the current idx and then go back is how it should work
-    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>,
+    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, widget_functions: &mut WidgetFunctions,
         project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
         //println!("self.actions.len(): {}, flameobjects.len(): {}", self.actions.len(), flameobjects.len());
@@ -123,6 +129,7 @@ impl UndoRedo
                 }
                 Action::Update(values) =>
                 {
+                    //println!("\n-------Undo Update values: {:?}", values);
                     // Prevent out of bounds issue
                     if flameobjects.len() <= 0
                     {
@@ -136,6 +143,9 @@ impl UndoRedo
                             crate::object_actions::delete_shape(&flameobject.settings.label, objects);
                             flameobject.settings = values.0.clone();
                             crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
+
+                            // Saving so that if we are doing new action and rewriting existing actions, then we need to get the current values, not the values before undoing
+                            widget_functions.flameobject_old = Some(flameobject.settings.clone());
                             break;
                         }
                     }
@@ -160,12 +170,13 @@ impl UndoRedo
         {
             self.current_idx.0 = None;
         }
-
+        //println!("\n----- undo current_idx:{:?}", self.current_idx);
 
         //println!("undo self.current_idx: {}", self.current_idx);
         
     }
-    pub fn redo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
+    pub fn redo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, widget_functions: &mut WidgetFunctions, project_dir: &str,
+        renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
         //println!("self.actions: {:?}", self.actions);
 
@@ -186,18 +197,40 @@ impl UndoRedo
                 return;
             }
         }
-
+        
         // If we are executing redo for the first time, make this false and if we are doing a create or delete on the current_idx, then increment by 1
+        /*
+        if let Some(ref mut current_idx) = self.current_idx.0
+        {
+            *current_idx += 1;
+            if self.current_idx.1 == true
+            {
+                if let Action::Update(_) = self.actions[*current_idx as usize]
+                {
+                    *current_idx -= 1;
+                }
+            }
+        }
+        // If its None, then we need to assign it to Some(0) so we can get started to redo
+        else if let None = self.current_idx.0
+        {
+            self.current_idx.0 = Some(0);
+        }
+        self.current_idx.1 = false;
+        */
         if self.current_idx.1 == true
         {
             if let Some(ref mut current_idx) = self.current_idx.0
             {
+                *current_idx += 1;
+                /*
                 match self.actions[*current_idx as usize]
                 {
                     Action::Create(_) => *current_idx += 1,
                     Action::Delete(_) => *current_idx += 1,
                     Action::Update(_) => {},
                 }
+                */
             }
             // If its None, then we need to assign it to Some(0) so we can get started to redo
             else if let None = self.current_idx.0
@@ -209,14 +242,13 @@ impl UndoRedo
         }
 
 
-
-
         // If its None for current_idx start from position 0 then
+        /*
         else if let None = self.current_idx.0
         {
             self.current_idx.0 = Some(0);
         }
-
+        */
         //println!("self.actions: {:?}", self.actions);
         // Get previous action and redo on that and then increment current_idx by 1
         if let Some(ref mut current_idx) = self.current_idx.0
@@ -234,10 +266,14 @@ impl UndoRedo
                     {
                         if flameobject.id == values.2
                         {
+                            // /println!("redo: values: {:?}\n{:?}", values.0, values.1);
                             crate::object_actions::delete_shape(&flameobject.settings.label, objects);
                             flameobject.settings = values.1.clone();
                             //string_backups.label = flameobjects[values.2 as usize].settings.label.clone();
                             crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
+
+                            widget_functions.flameobject_old = Some(flameobject.settings.clone());
+                            break;
                         }
                     }
                 }
@@ -258,13 +294,23 @@ impl UndoRedo
             }
             *current_idx += 1;
             /*
+            if *current_idx < self.actions.len() as u16 - 1
+            {
+                *current_idx += 1;
+            }
+            else
+            {
+                self.current_idx.2 = false;
+            }
+            */
+            /*
             if dont_increment == false
             {
                 *current_idx += 1;
             }
             */
         }
-
+        //println!("\n----- redo current_idx:{:?}", self.current_idx);
         
 
     }
