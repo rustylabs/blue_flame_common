@@ -23,7 +23,7 @@ pub struct UndoRedo
 impl UndoRedo
 {
     // If exeeded length_size then pop from begginning
-    fn pop_from_stack_determine(&mut self, editor_settings: &EditorSettings)
+    fn exeeded_length_determin(&mut self, editor_settings: &EditorSettings)
     {
         if self.actions.len() >= editor_settings.undoredo_bufsize as usize
         {
@@ -31,15 +31,26 @@ impl UndoRedo
             //println!("self.actions: {:?}", self.actions);
         }
     }
-    pub fn save_action(&mut self, action: Action, editor_settings: &EditorSettings)
+    // If we have an action ahead but we did something else, then pop it
+    fn overwrite_ahead(&mut self)
     {
-        self.pop_from_stack_determine(editor_settings);
         // If we have gone back and we are then adding new stuff, then pop everything ahead before adding
         if let Some(current_idx) = self.current_idx.0
         {
             let actions_len = self.actions.len() as u16 - 1;
             //println!("\n-----save_action current_idx: {}, actions.len(): {}", current_idx, self.actions.len());
-            if self.actions.len() > 0 && current_idx <= actions_len && self.current_idx.1 == false /*If we just did a redo*/
+
+            if self.actions.len() > 0 && current_idx < actions_len
+            {
+                //println!("(self.actions.len() as u16 - 1) - self.current_idx = {}\tself.actions.len(): {}", (self.actions.len() as u16 - 1) - self.current_idx, self.actions.len());
+                for _i in 0..actions_len - current_idx //+1 /*Remove the current idx as well*/
+                {
+                    self.actions.pop();
+                    //println!("After pop: {:?}", self.actions);
+                    //println!("iteration for popping undoredo: {}", _i);
+                }
+            }
+            else if self.actions.len() > 0 && current_idx <= actions_len && self.current_idx.1 == false /*If we just did a redo*/
             {
                 //println!("(self.actions.len() as u16 - 1) - self.current_idx = {}\tself.actions.len(): {}", (self.actions.len() as u16 - 1) - self.current_idx, self.actions.len());
                 for _i in 0..actions_len - current_idx +1 /*Remove the current idx as well*/
@@ -50,6 +61,11 @@ impl UndoRedo
                 }
             }
         }
+    }
+    pub fn save_action(&mut self, action: Action, editor_settings: &EditorSettings)
+    {
+        self.exeeded_length_determin(editor_settings);
+        self.overwrite_ahead();
 
         self.current_idx.1 = true;
 
