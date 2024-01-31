@@ -24,7 +24,7 @@ impl EditorSettings
             height              : 900f32,
             range               : 900_000_000f32,
             slider_speed        : 0.01f32,
-            undoredo_bufsize    : 20,
+            undoredo_bufsize    : 36,
         }
     }
 }
