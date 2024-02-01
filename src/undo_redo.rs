@@ -40,7 +40,7 @@ impl UndoRedo
             let actions_len = self.actions.len() as u16 - 1;
             //println!("\n-----save_action current_idx: {}, actions.len(): {}", current_idx, self.actions.len());
 
-            if self.actions.len() > 0 && current_idx < actions_len
+            if self.actions.len() > 0 && current_idx < actions_len /*&& self.current_idx.1 == true*/ /*To prevent it from running from redo*/
             {
                 //println!("(self.actions.len() as u16 - 1) - self.current_idx = {}\tself.actions.len(): {}", (self.actions.len() as u16 - 1) - self.current_idx, self.actions.len());
                 for _i in 0..actions_len - current_idx //+1 /*Remove the current idx as well*/
@@ -97,7 +97,7 @@ impl UndoRedo
     }
     // When user presses ctrl+Z    // 
     // Read the current idx and then go back is how it should work
-    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, widget_functions: &mut WidgetFunctions,
+    pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, widget_functions: &mut WidgetFunctions, flameobject_selected_parent_idx: &mut u16,
         project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
     {
         //println!("self.actions.len(): {}, flameobjects.len(): {}", self.actions.len(), flameobjects.len());
@@ -107,7 +107,7 @@ impl UndoRedo
             return;
         }
         if let None = self.current_idx.0
-        {   
+        {
             return;
         }
         self.current_idx.1 = true;
@@ -170,7 +170,13 @@ impl UndoRedo
                 Action::Delete(values) =>
                 {
                     flameobjects.push(values.copy());
-                    crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, renderer, objects, window);
+                    let idx = flameobjects.len() - 1;
+                    crate::object_actions::create_shape(&flameobjects[idx].settings, project_dir, renderer, objects, window);
+
+                    if values.selected == true
+                    {
+                        *flameobject_selected_parent_idx = idx as u16;
+                    }
                 }
             }
             if *current_idx > 0
