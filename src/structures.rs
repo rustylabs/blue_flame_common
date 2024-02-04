@@ -1,3 +1,6 @@
+use blue_engine::header::{Renderer, ObjectStorage};
+use blue_engine_egui::{self, egui::Context};
+
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct D3Labels
 {
@@ -26,6 +29,18 @@ impl D3Labels
 // i.e. is it color that has changed, position etc!
 #[derive(Debug)]
 pub enum WhatChanged{Color, Position, Rotation}
+
+
+
+// Will contain stuff from closures in order to reduce arguments passed in as it is pain in the ass, can't unfortunately include window due to argument in update_loop
+pub struct BlueEngineArgs<'a>
+{
+    pub renderer: &'a mut Renderer,
+    //window: &'a mut Window,
+    pub objects: &'a mut ObjectStorage,
+    pub input: &'a blue_engine::InputHelper,
+    pub ctx: &'a Context,
+}
 
 // Used for widgets such as color as dumbass egui devs can't be fucked to have an event to determine if its closed or not
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use crate::radio_options::object_type;
 use blue_engine::{Renderer, ObjectStorage, Window};
 use crate::structures::flameobject::{self, Flameobject};
-use crate::structures::WidgetFunctions;
+use crate::structures::{WidgetFunctions, BlueEngineArgs};
 use crate::EditorSettings;
 
 
@@ -98,7 +98,7 @@ impl UndoRedo
     // When user presses ctrl+Z    // 
     // Read the current idx and then go back is how it should work
     pub fn undo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, widget_functions: &mut WidgetFunctions, flameobject_selected_parent_idx: &mut u16,
-        project_dir: &str, renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
+        project_dir: &str, blue_engine_args: &mut BlueEngineArgs, window: &Window)
     {
         //println!("self.actions.len(): {}, flameobjects.len(): {}", self.actions.len(), flameobjects.len());
         // Prevent buffer overflow; If no more undos remaining, return
@@ -140,7 +140,7 @@ impl UndoRedo
                             break;
                         }
                     }
-                    crate::object_actions::delete_shape(&flameobjects[remove_idx].settings.label, objects);
+                    crate::object_actions::delete_shape(&flameobjects[remove_idx].settings.label, blue_engine_args);
                     flameobjects.remove(remove_idx);
                 }
                 Action::Update(values) =>
@@ -156,9 +156,9 @@ impl UndoRedo
                     {
                         if flameobject.id == values.2
                         {
-                            crate::object_actions::delete_shape(&flameobject.settings.label, objects);
+                            crate::object_actions::delete_shape(&flameobject.settings.label, blue_engine_args);
                             flameobject.settings = values.0.clone();
-                            crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
+                            crate::object_actions::create_shape(&flameobject.settings, project_dir, blue_engine_args, window);
 
                             // Saving so that if we are doing new action and rewriting existing actions, then we need to get the current values, not the values before undoing
                             widget_functions.flameobject_old = Some(flameobject.settings.clone());
@@ -171,7 +171,7 @@ impl UndoRedo
                 {
                     flameobjects.push(values.copy());
                     let idx = flameobjects.len() - 1;
-                    crate::object_actions::create_shape(&flameobjects[idx].settings, project_dir, renderer, objects, window);
+                    crate::object_actions::create_shape(&flameobjects[idx].settings, project_dir, blue_engine_args, window);
 
                     if values.selected == true
                     {
@@ -198,7 +198,7 @@ impl UndoRedo
         
     }
     pub fn redo(&mut self, flameobjects: &mut Vec<flameobject::Flameobject>, widget_functions: &mut WidgetFunctions, project_dir: &str,
-        renderer: &mut Renderer, objects: &mut ObjectStorage, window: &Window)
+        blue_engine_args: &mut BlueEngineArgs, window: &Window)
     {
         //println!("self.actions: {:?}", self.actions);
 
@@ -280,7 +280,7 @@ impl UndoRedo
                 Action::Create(values) =>
                 {
                     flameobjects.push(flameobject::Flameobject::init(values.1, Some(values.0)));
-                    crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, renderer, objects, window);
+                    crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, blue_engine_args, window);
                 }
                 Action::Update(values) =>
                 {
@@ -289,10 +289,10 @@ impl UndoRedo
                         if flameobject.id == values.2
                         {
                             // /println!("redo: values: {:?}\n{:?}", values.0, values.1);
-                            crate::object_actions::delete_shape(&flameobject.settings.label, objects);
+                            crate::object_actions::delete_shape(&flameobject.settings.label, blue_engine_args);
                             flameobject.settings = values.1.clone();
                             //string_backups.label = flameobjects[values.2 as usize].settings.label.clone();
-                            crate::object_actions::create_shape(&flameobject.settings, project_dir, renderer, objects, window);
+                            crate::object_actions::create_shape(&flameobject.settings, project_dir, blue_engine_args, window);
 
                             widget_functions.flameobject_old = Some(flameobject.settings.clone());
                             break;
@@ -302,7 +302,7 @@ impl UndoRedo
                 // Delete the object
                 Action::Delete(values) =>
                 {
-                    crate::object_actions::delete_shape(&values.settings.label, objects);
+                    crate::object_actions::delete_shape(&values.settings.label, blue_engine_args);
                     let mut remove_idx: usize = 0;
                     for (i, flameobject) in flameobjects.iter_mut().enumerate()
                     {
