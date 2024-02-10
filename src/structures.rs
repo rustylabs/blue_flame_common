@@ -1,5 +1,11 @@
-use blue_engine::header::{Renderer, ObjectStorage};
+use std::path::PathBuf;
+
+use blue_engine::header::{Renderer, ObjectStorage, Window};
 use blue_engine_egui::{self, egui::Context};
+
+use crate::{emojis::Emojis, radio_options::{ViewModes, object_type::ObjectType, ObjectMouseMovement}};
+
+use self::project_config::ProjectConfig;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct D3Labels
@@ -30,6 +36,178 @@ impl D3Labels
 #[derive(Debug)]
 pub enum WhatChanged{Color, Position, Rotation}
 
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Project
+{
+    pub name        : String,
+    pub dir         : String,
+    pub game_type   : crate::radio_options::GameTypeDimensions,
+    pub status      : bool,
+}
+impl Project
+{
+    pub fn init() -> Self
+    {
+        Self
+        {
+            name        : String::new(),
+            dir         : String::new(),
+            game_type   : crate::radio_options::GameTypeDimensions::D2,
+            status      : false,
+        }
+    }
+    pub fn change_choice(list: &mut [Self], choice_true: u8)
+    {
+        for (i, item) in list.iter_mut().enumerate()
+        {
+            if i as u8 == choice_true
+            {
+                item.status = true;
+            }
+            else
+            {
+                item.status = false;
+            }
+        }
+    }
+    pub fn selected_dir(list: &[Self]) -> String
+    {
+        let mut selected_dir = String::new();
+
+        for item in list.iter()
+        {
+            if item.status == true
+            {
+                selected_dir.push_str(&format!("{}", item.dir));
+                break;
+            }
+        }
+        return selected_dir;
+    }
+}
+
+// Defines where all the file paths are
+pub struct FilePaths
+{
+    pub projects        : PathBuf, // ~/.config/blue_flame/blue_flame_common
+    pub project_config  : &'static str, // blue_flame/project.conf
+    pub current_scene   : String,
+    pub library         : PathBuf,
+}
+impl FilePaths
+{
+    pub fn init() -> Self
+    {
+        // Creating dirs
+        // ~/.config.blue_flame
+        let mut projects: PathBuf =  match dirs::home_dir()
+        {
+            Some(v)         => v,
+            None                     => {println!("Unable to obtain home dir"); PathBuf::new()}
+        };
+        projects.push(".config");
+        projects.push("blue_flame");
+
+        println!("config_dir: {:?}", projects);
+        match std::fs::create_dir(&projects)
+        {
+            Ok(_)       => println!("Config dir created succesfully in {}", projects.display()),
+            Err(e)      => println!("Unable to create config dir due to {e}"),
+        }
+
+        let mut library: PathBuf =  match dirs::home_dir()
+        {
+            Some(v)         => v,
+            None                     => {println!("Unable to obtain home dir"); PathBuf::new()}
+        };
+        
+        library.push(".local/share/blue_flame/blue_flame_common");
+        println!("library: {:?}", library);
+
+        let project_config: &'static str = "blue_flame/project.conf";
+
+        Self
+        {
+            projects,
+            project_config,
+            current_scene: String::new(),
+            library,
+        }
+    }
+    // Creates the folder for the project
+    /*
+    fn create_project_config(&self)
+    {
+        match std::fs::create_dir(format!("{}", self.scenes.display()))
+        {
+            Ok(_)       => println!("Config dir for project created succesfully in {}", self.scenes.display()),
+            Err(e)      => println!("Unable to create config dir for project due to: {e}"),
+        }
+    }
+    */
+}
+
+    // Declaring variables/structures
+    pub struct WindowSize
+    {
+        pub x           : f32,
+        pub y           : f32,
+    }
+    impl WindowSize
+    {
+        pub fn init(window: &Window) -> Self
+        {
+            Self
+            {
+                x       : window.inner_size().width as f32,
+                y       : window.inner_size().height as f32,
+            }
+        }
+        pub fn return_tuple(&self) -> (f32, f32)
+        {
+            return (self.x, self.y);
+        }
+    }
+/*
+pub struct EditorModes
+{
+    pub projects        :   (bool, bool /*"New Project" scene window*/,
+                        (bool /*2.0 Create new project with "cargo new" (checkbox)*/, String /*2.1 Label for <project_name>*/),
+                        (bool /*3 Window for delete project*/, bool /*Delete entire project dir (checkbox)*/),
+                        ),
+    //main            : (bool, [bool;2]),
+    //pub main            : (bool, ViewModes, bool /*Create new object window*/),
+    pub main            : (bool, bool /*Create new object window*/),
+}
+*/
+// Functions like powerobject in powerbuilder but for rust
+// Contains all the args used for the game editor, (not game engine). scene will be passed in outside of this
+
+// Invoked via shift+A
+pub struct MouseFunctions
+{
+    pub is_right_clicked        : bool, // Has it been right clicked
+    pub object_type_captured    : Option<ObjectType>,
+    pub captured_coordinates    : (f32, f32), // Captures the coordinates at any given time, can be even used with difference between object and mouse
+    pub object_mouse_movement   : Option<ObjectMouseMovement>, // grab to move the object etc
+}
+
+pub struct GameEditorArgs<'a>
+{
+    pub filepaths: &'a mut FilePaths,
+    pub string_backups: &'a mut StringBackups,
+    pub emojis: &'a Emojis,
+    pub widget_functions: &'a mut WidgetFunctions,
+    pub project_config: &'a mut ProjectConfig,
+    pub current_project_dir: &'a mut String,
+    //pub editor_modes: &'a mut EditorModes,
+    pub window_size: &'a WindowSize,
+    pub mouse_functions: &'a mut MouseFunctions,
+    pub viewmode: &'a mut ViewModes,
+    pub previous_viewmode: &'a mut ViewModes,
+    pub enable_shortcuts: &'a mut bool,
+}
 
 
 // Will contain stuff from closures in order to reduce arguments passed in as it is pain in the ass, can't unfortunately include window due to argument in update_loop

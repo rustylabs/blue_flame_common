@@ -1,7 +1,7 @@
 use crate::radio_options::object_type;
 use blue_engine::{Renderer, ObjectStorage, Window};
 use crate::structures::flameobject::{self, Flameobject};
-use crate::structures::{WidgetFunctions, BlueEngineArgs};
+use crate::structures::{WidgetFunctions, BlueEngineArgs, GameEditorArgs};
 use crate::EditorSettings;
 
 
