@@ -43,6 +43,7 @@ pub mod emojis
         pub tick: char,
         pub load: char,
         pub undo_redo: UndoRedo,
+        pub file: char,
     }
     impl Emojis
     {
@@ -59,6 +60,7 @@ pub mod emojis
                 tick: '✅',
                 load: '↻',
                 undo_redo: UndoRedo::init(),
+                file: '📁',
             }
         }
     }

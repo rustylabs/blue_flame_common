@@ -45,7 +45,7 @@ pub mod scene
     }
 
 
-    pub fn save(scene: &Scene, filepath: &str, project_dir: &str) -> bool
+    pub fn save(scene: &Scene, filepath: &str, project_dir: &str) -> bool // Return true if all went fine
     {
         let data = postcard::to_stdvec(&(VERSION, scene)).unwrap();
 

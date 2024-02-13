@@ -91,7 +91,7 @@ impl Project
 pub struct FilePaths
 {
     pub projects        : PathBuf, // ~/.config/blue_flame/blue_flame_common
-    pub project_config  : &'static str, // blue_flame/project.conf
+    pub project_config  : &'static str, // <current_project_dir>/blue_flame/project.conf
     pub current_scene   : String,
     pub library         : PathBuf,
 }
@@ -104,7 +104,8 @@ impl FilePaths
         let mut projects: PathBuf =  match dirs::home_dir()
         {
             Some(v)         => v,
-            None                     => {println!("Unable to obtain home dir"); PathBuf::new()}
+            //None                     => {println!("Unable to obtain home dir"); PathBuf::new()}
+            None                     => panic!("Unable to obtain home dir")
         };
         projects.push(".config");
         projects.push("blue_flame");
@@ -224,7 +225,6 @@ pub struct BlueEngineArgs<'a>
 #[derive(Debug)]
 pub struct WidgetFunctions
 {
-    pub is_opened           : bool,
     //has_changed         : bool,
     pub has_changed         : Option<WhatChanged>,
     pub flameobject_old     : Option<flameobject::Settings>,
@@ -233,7 +233,6 @@ impl WidgetFunctions
 {
     pub fn clear_everything(&mut self)
     {
-        self.is_opened = false;
         self.has_changed = None;
         self.flameobject_old = None;
     }
