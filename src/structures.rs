@@ -186,6 +186,7 @@ pub struct EditorModes
 // Contains all the args used for the game editor, (not game engine). scene will be passed in outside of this
 
 // Invoked via shift+A
+
 pub struct MouseFunctions
 {
     pub is_right_clicked        : bool, // Has it been right clicked

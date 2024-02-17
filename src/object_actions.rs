@@ -1,3 +1,5 @@
+// Deals with changing shapes on the scene, it does NOT affect the shape that is stored on game editor's variables
+
 use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
 use crate::structures::{flameobject, BlueEngineArgs};
 use crate::radio_options::object_type::{ObjectType, shape, light};

@@ -1,3 +1,5 @@
+use crate::FileExtensionNames;
+
 #[derive(PartialEq, Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
 pub enum GameTypeDimensions{D2, D3}
 impl GameTypeDimensions
@@ -8,6 +10,8 @@ impl GameTypeDimensions
     }
 }
 
+
+pub enum FilePickerMode{OpenFolder, OpenFile, SaveFile(&'static str)}
 // When user press 'g' for example move the object based on mouse coordinates
 pub enum ObjectMouseMovement{Grab, Size, Rotation}
 

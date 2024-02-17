@@ -4,6 +4,11 @@ pub mod radio_options;
 pub mod structures;
 pub mod undo_redo;
 
+pub struct FileExtensionNames
+{
+    pub scene: &'static str,
+    pub blueprint: &'static str,
+}
 
 
 pub struct EditorSettings
