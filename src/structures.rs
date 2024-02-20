@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{fs::DirEntry, path::PathBuf};
 
 use blue_engine::header::{Renderer, ObjectStorage, Window};
 use blue_engine_egui::{self, egui::Context};
@@ -87,6 +87,15 @@ impl Project
     }
 }
 
+// Built in file explorer for egui
+#[derive(Debug)]
+pub struct FileExplorerContent
+{
+    pub subdir_level: (u16, Option<String> /*What is it child to so it appears under it*/),
+    pub is_collapsed: bool,
+    pub selected: bool,
+    pub actual_content: DirEntry,
+}
 // Defines where all the file paths are
 pub struct FilePaths
 {
@@ -209,6 +218,7 @@ pub struct GameEditorArgs<'a>
     pub viewmode: &'a mut ViewModes,
     pub previous_viewmode: &'a mut ViewModes,
     pub enable_shortcuts: &'a mut bool,
+    pub file_explorer_contents: &'a mut (bool, Option<Vec<FileExplorerContent>>),
 }
 
 

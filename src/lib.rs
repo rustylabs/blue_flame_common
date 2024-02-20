@@ -48,7 +48,8 @@ pub mod emojis
         pub tick: char,
         pub load: char,
         pub undo_redo: UndoRedo,
-        pub file: char,
+        pub file_icons: FileIcons,
+        pub arrows: Arrows,
     }
     impl Emojis
     {
@@ -65,7 +66,24 @@ pub mod emojis
                 tick: '✅',
                 load: '↻',
                 undo_redo: UndoRedo::init(),
-                file: '📁',
+                file_icons: FileIcons::init(),
+                arrows: Arrows::init(),
+            }
+        }
+    }
+    pub struct FileIcons
+    {
+        pub file: char,
+        pub folder: char,
+    }
+    impl FileIcons
+    {
+        pub fn init() -> Self
+        {
+            Self
+            {
+                file: '📄',
+                folder: '🗀',
             }
         }
     }
@@ -86,6 +104,24 @@ pub mod emojis
                 */
                 undo: '↺',
                 redo: '↻',
+            }
+        }
+    }
+    pub struct Arrows
+    {
+        pub right: char,
+        pub left: char,
+        pub down: char,
+    }
+    impl Arrows
+    {
+        pub fn init() -> Self
+        {
+            Self
+            {
+                right: '▶',
+                left: '◀',
+                down: '▼',
             }
         }
     }
