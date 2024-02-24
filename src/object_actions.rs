@@ -57,6 +57,7 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
 pub fn delete_shape(label: &str, blue_engine_args: &mut BlueEngineArgs)
 {
     blue_engine_args.objects.remove(label);
+    println!("delete_shape(): {}", label);
 }
 pub mod update_shape
 {
