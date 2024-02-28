@@ -91,7 +91,7 @@ impl Project
 #[derive(Debug)]
 pub struct FileExplorerContent
 {
-    pub subdir_level: (u16, Option<String> /*What is it child to so it appears under it*/),
+    pub subdir_level: (u16, Option<String> /*Parents name it appears under*/),
     pub is_collapsed: bool,
     pub selected: bool,
     pub actual_content: DirEntry,
