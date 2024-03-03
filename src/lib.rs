@@ -121,7 +121,7 @@ pub mod emojis
             {
                 right: '▶',
                 left: '◀',
-                down: '▼',
+                down: '⬇',
             }
         }
     }
