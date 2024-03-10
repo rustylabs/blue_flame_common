@@ -154,6 +154,8 @@ impl UndoRedo
                     // Put the old value into flameobject
                     for flameobject in flameobjects.iter_mut()
                     {
+                        //println!("flameobject_old: {:?}", flameobject);
+                        //println!("values.2: {:?}", values.2);
                         if flameobject.id == values.2
                         {
                             crate::object_actions::delete_shape(&flameobject.settings.label, blue_engine_args);
