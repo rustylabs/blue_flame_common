@@ -40,7 +40,7 @@ pub mod emojis
     pub struct Emojis
     {
         pub trash: char,
-        pub add: char,
+        pub addition: Addition,
         pub settings: char,
         pub cancel: char,
         pub save: char,
@@ -58,7 +58,7 @@ pub mod emojis
             Self
             {
                 trash: '🗑',
-                add: '➕',
+                addition: Addition::init(),
                 settings: '⚙',
                 cancel: '⛔',
                 save: '💾',
@@ -68,6 +68,23 @@ pub mod emojis
                 undo_redo: UndoRedo::init(),
                 file_icons: FileIcons::init(),
                 arrows: Arrows::init(),
+            }
+        }
+    }
+    // + - 
+    pub struct Addition
+    {
+        pub plus: char,
+        pub minus: char,
+    }
+    impl Addition
+    {
+        pub fn init() -> Self
+        {
+            Self
+            {
+                plus: '➕',
+                minus: '➖',
             }
         }
     }
