@@ -1,7 +1,7 @@
 use std::{fs::DirEntry, path::PathBuf};
 
-use blue_engine::header::{Renderer, ObjectStorage, Window};
-use blue_engine_egui::{self, egui::Context};
+use blue_engine::{header::{ObjectStorage, Renderer, Window}, Camera};
+use blue_engine_utilities::{egui::egui::{self, Context}};
 
 use crate::{emojis::Emojis, radio_options::{ViewModes, object_type::ObjectType, ObjectMouseMovement}};
 
@@ -171,8 +171,8 @@ impl FilePaths
         {
             Self
             {
-                x       : window.inner_size().width as f32,
-                y       : window.inner_size().height as f32,
+                x       : window.as_ref().unwrap().inner_size().width as f32,
+                y       : window.as_ref().unwrap().inner_size().height as f32,
             }
         }
         pub fn return_tuple(&self) -> (f32, f32)
@@ -231,6 +231,7 @@ pub struct BlueEngineArgs<'a>
     pub objects: &'a mut ObjectStorage,
     pub input: &'a blue_engine::InputHelper,
     pub ctx: &'a Context,
+    pub camera: &'a mut Camera,
 }
 
 // Used for widgets such as color as dumbass egui devs can't be fucked to have an event to determine if its closed or not
@@ -551,7 +552,8 @@ pub mod project_config
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct ProjectConfig
     {
-        pub last_scene_filepath          : String,
+        pub last_scene_filepath: String,
+        pub camera_position: CameraPosition,
     }
     impl ProjectConfig
     {
@@ -559,7 +561,26 @@ pub mod project_config
         {
             Self
             {
-                last_scene_filepath      : String::new(),
+                last_scene_filepath: String::new(),
+                camera_position: CameraPosition::init(),
+            }
+        }
+    }
+    #[derive(Debug, serde::Serialize, serde::Deserialize)]
+    pub struct CameraPosition
+    {
+        pub zoom: u16, // z position of camera
+        pub position: [u16; 2] // x, y position
+        //rotation: u16, // How much camerea is rotated
+    }
+    impl CameraPosition
+    {
+        fn init() -> Self
+        {
+            Self
+            {
+                zoom: 100,
+                position: [0, 0],
             }
         }
     }

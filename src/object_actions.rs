@@ -15,8 +15,8 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
         {
             shape::Dimension::D2(shape) => match shape
             {
-                shape::Shape2D::Square => square(flameobject_settings.label.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects).unwrap(),
-                shape::Shape2D::Triangle => triangle(flameobject_settings.label.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects).unwrap(),
+                shape::Shape2D::Square => square(flameobject_settings.label.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects),
+                shape::Shape2D::Triangle => triangle(flameobject_settings.label.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects),
                 shape::Shape2D::Line => return,
             }
             shape::Dimension::D3(shape) => match shape
@@ -70,14 +70,14 @@ use crate::structures::{flameobject::{self}, BlueEngineArgs};
         blue_engine_args.objects
             .get_mut(&flameobject_settings.label)
             .unwrap()
-            .resize(flameobject_settings.size.x, flameobject_settings.size.y, flameobject_settings.size.z, window.inner_size());
+            .resize(flameobject_settings.size.x, flameobject_settings.size.y, flameobject_settings.size.z, window.as_ref().unwrap().inner_size());
     }
     pub fn position(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs)
     {
         blue_engine_args.objects
             .get_mut(&flameobject_settings.label)
             .unwrap()
-            .set_position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
+            .set_position([flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z]);
             //.position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
     }
     pub fn color(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs)
@@ -85,8 +85,8 @@ use crate::structures::{flameobject::{self}, BlueEngineArgs};
         blue_engine_args.objects
             .get_mut(&flameobject_settings.label)
             .unwrap()
-            .set_uniform_color(flameobject_settings.color[0], flameobject_settings.color[1], flameobject_settings.color[2], flameobject_settings.color[3])
-            .unwrap();
+            //.set_uniform_color(flameobject_settings.color[0], flameobject_settings.color[1], flameobject_settings.color[2], flameobject_settings.color[3])
+            .set_color(flameobject_settings.color[0], flameobject_settings.color[1], flameobject_settings.color[2], flameobject_settings.color[3]);
     }
     pub fn rotation(flameobject_label: &str, axis: blue_engine::RotateAxis, rotation: f32, blue_engine_args: &mut BlueEngineArgs)
     {
@@ -130,8 +130,7 @@ use crate::structures::{flameobject::{self}, BlueEngineArgs};
         blue_engine_args.objects
             .get_mut(&flameobject_settings.label)
             .unwrap()
-            .set_texture(texture.unwrap())
-            .unwrap();
+            .set_texture(texture.unwrap());
 
     }
 }

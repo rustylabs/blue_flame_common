@@ -47,14 +47,16 @@ pub mod scene
 
     pub fn save(scene: &Scene, filepath: &str, project_dir: &str) -> bool // Return true if all went fine
     {
-        let data = postcard::to_stdvec(&(VERSION, scene)).unwrap();
+        /*
+        let data = postcard::to_vec(&(VERSION, scene)).unwrap();
 
         match std::fs::write(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)), &data)
         {
             Ok(_)               => {println!("Scene saved!"); return true},
             Err(e)       => {println!("Scene save error: {e}"); return false},
         }
-
+        */
+        return true;
     }
     pub fn load(scene: &mut Scene, project_dir: &str, filepath: &str, remove_shapes: bool,
         /*Game engine shit*/ blue_engine_args: &mut BlueEngineArgs, window: &Window) -> bool // Making sure there was no issue with loading file due to error in filepath
@@ -92,14 +94,14 @@ pub mod scene
         match file.read_to_end(&mut data)
         {
             Ok(_)               => {},
-            Err(e)       => println!("read_to_end error {e}"),
+            Err(e)       => println!("scene read_to_end error: {e}"),
         }
 
         //let value: (f32, Vec<(Object, Object1)>) = match postcard::from_bytes(&file)
         let value: (f32, Scene) = match postcard::from_bytes(&data)
         {
             Ok(d)      => d,
-            Err(e)                  => {println!("Error on load: {e}"); return false;},
+            Err(e)                  => {println!("scene error (value) on load: {e}"); return false;},
         };
 
         // Deletes shapes
