@@ -47,16 +47,13 @@ pub mod scene
 
     pub fn save(scene: &Scene, filepath: &str, project_dir: &str) -> bool // Return true if all went fine
     {
-        /*
-        let data = postcard::to_vec(&(VERSION, scene)).unwrap();
+        let data = postcard::to_stdvec(&(VERSION, scene)).unwrap();
 
         match std::fs::write(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)), &data)
         {
             Ok(_)               => {println!("Scene saved!"); return true},
             Err(e)       => {println!("Scene save error: {e}"); return false},
         }
-        */
-        return true;
     }
     pub fn load(scene: &mut Scene, project_dir: &str, filepath: &str, remove_shapes: bool,
         /*Game engine shit*/ blue_engine_args: &mut BlueEngineArgs, window: &Window) -> bool // Making sure there was no issue with loading file due to error in filepath
