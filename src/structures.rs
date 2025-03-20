@@ -3,7 +3,7 @@ use std::{fs::DirEntry, path::PathBuf};
 use blue_engine::{header::{ObjectStorage, Renderer, Window}, Camera};
 use blue_engine_utilities::{egui::egui::{self, Context}};
 
-use crate::{emojis::Emojis, radio_options::{ViewModes, object_type::ObjectType, ObjectMouseMovement}};
+use crate::radio_options::{ViewModes, object_type::ObjectType, ObjectMouseMovement};
 
 use self::project_config::ProjectConfig;
 
@@ -209,7 +209,6 @@ pub struct GameEditorArgs<'a>
 {
     pub filepaths: &'a mut FilePaths,
     pub string_backups: &'a mut StringBackups,
-    pub emojis: &'a Emojis,
     pub widget_functions: &'a mut WidgetFunctions,
     pub project_config: &'a mut ProjectConfig,
     pub current_project_dir: &'a mut String,
@@ -255,6 +254,8 @@ pub struct StringBackups
     pub texture     : String,
     pub label       : String,
 }
+
+// Gets linked from scene as vector
 pub mod flameobject
 {
     use crate::radio_options::object_type::{ObjectType, shape::{self, Shape3D}, self};
@@ -410,7 +411,7 @@ pub mod flameobject
                 object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
                 position            : D3Labels::init(0f32),
-                size                : D3Labels::init(30f32),
+                size                : D3Labels::init(0.5f32),
                 rotation            : D3Labels::init(0f32),
                 //texture             : [EMPTY; 3],
                 texture             : Texture::init(),
