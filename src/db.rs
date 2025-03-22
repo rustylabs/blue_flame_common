@@ -4,7 +4,7 @@ pub mod scene
     //use super::*;
     use std::io::Read;
     use blue_engine::{ObjectStorage, Window, Renderer};
-    use crate::structures::{flameobject::Flameobject, scene::Scene, BlueEngineArgs};
+    use crate::structures::{flameobject::Flameobject, structures::scene::Scene, structures::BlueEngineArgs};
     
 
     const VERSION: f32 = 0.1;

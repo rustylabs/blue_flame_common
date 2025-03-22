@@ -1,7 +1,7 @@
 // Deals with changing shapes on the scene, it does NOT affect the shape that is stored on game editor's variables
 
 use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
-use crate::structures::{flameobject, BlueEngineArgs};
+use crate::structures::{flameobject, structures::BlueEngineArgs};
 use crate::radio_options::object_type::{ObjectType, shape, light};
 
 
@@ -62,7 +62,7 @@ pub fn delete_shape(label: &str, blue_engine_args: &mut BlueEngineArgs)
 pub mod update_shape
 {
     use blue_engine::Window;
-    use crate::structures::{flameobject::{self}, BlueEngineArgs};
+    use crate::structures::{flameobject::{self}, structures::BlueEngineArgs};
 
 
     pub fn size(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs, window: &Window)
