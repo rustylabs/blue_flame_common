@@ -159,27 +159,27 @@ impl FilePaths
     */
 }
 
-    // Declaring variables/structures
-    pub struct WindowSize
+// Declaring variables/structures
+pub struct WindowSize
+{
+    pub x           : f32,
+    pub y           : f32,
+}
+impl WindowSize
+{
+    pub fn init(window: &Window) -> Self
     {
-        pub x           : f32,
-        pub y           : f32,
-    }
-    impl WindowSize
-    {
-        pub fn init(window: &Window) -> Self
+        Self
         {
-            Self
-            {
-                x       : window.as_ref().unwrap().inner_size().width as f32,
-                y       : window.as_ref().unwrap().inner_size().height as f32,
-            }
-        }
-        pub fn return_tuple(&self) -> (f32, f32)
-        {
-            return (self.x, self.y);
+            x       : window.as_ref().unwrap().inner_size().width as f32,
+            y       : window.as_ref().unwrap().inner_size().height as f32,
         }
     }
+    pub fn return_tuple(&self) -> (f32, f32)
+    {
+        return (self.x, self.y);
+    }
+}
 /*
 pub struct EditorModes
 {
@@ -260,6 +260,67 @@ pub mod flameobject
 {
     use crate::radio_options::object_type::{ObjectType, shape::{self, Shape3D}, self};
     use super::D3Labels;
+
+    // e.g. sprite animation for 2D
+    #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+    pub enum Shape2D3DSepcificSettings
+    {
+        D2(shape_2d_3d_specific_settings::shape_2d_settings::Shape2DSettings),
+        D3(shape_2d_3d_specific_settings::shape_3d_settings::Shape3DSettings),
+    }
+    
+
+    pub mod shape_2d_3d_specific_settings
+    {
+        use super::*;
+        pub mod shape_2d_settings
+        {
+            use super::*;
+            #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+            pub struct AnimatedSprites
+            {
+                pub sprites: Option<Vec<Texture>>,
+                pub animation_speed: f32,
+            }
+            impl AnimatedSprites
+            {
+                pub fn init() -> Self
+                {
+                    Self
+                    {
+                        sprites: None,
+                        animation_speed: 5f32,
+                    }
+                }
+            }
+
+            #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+            pub struct Shape2DSettings
+            {
+                pub animated_sprites: AnimatedSprites,
+            }
+            impl Shape2DSettings
+            {
+                pub fn init() -> Self
+                {
+                    Self
+                    {
+                        animated_sprites: shape_2d_settings::AnimatedSprites::init(),
+                    }
+                }
+            }
+        }
+        pub mod shape_3d_settings
+        {
+            #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+            pub struct Shape3DSettings
+            {
+        
+            }
+        }
+
+    
+    }
 
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Flameobject
@@ -351,18 +412,19 @@ pub mod flameobject
     #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
     pub struct Settings
     {
-        pub label               : String, // "Object 0", "Object 1" etc
-        pub blueprint_key       : Option<(String, bool)>, // Used as key to modify all objects that has this key and can it get affected by future blueprint saves
+        pub label: String, // "Object 0", "Object 1" etc
+        pub blueprint_key: Option<(String, bool)>, // Used as key to modify all objects that has this key and can it get affected by future blueprint saves
         //pub object_type         : [bool; 3],
-        pub object_type         : ObjectType,
+        pub object_type: ObjectType,
         //position            : [object_settings::three_d_lables::Fields; 3],
         //pub position            : [f32; 3],
-        pub position            : D3Labels,
-        pub size                : D3Labels,
-        pub rotation            : D3Labels,
-        pub texture             : Texture,
+        pub position: D3Labels,
+        pub size: D3Labels,
+        pub rotation: D3Labels,
+        pub texture: Texture,
         //texture             : [String; 3],
-        pub color               : [f32; 4],
+        pub color: [f32; 4],
+        pub shape_2d_3d_specific_settings: Shape2D3DSepcificSettings,
     }
     impl Settings
     {
@@ -405,17 +467,18 @@ pub mod flameobject
 
             Self
             {
-                label               : format!("Object {id}"),
-                blueprint_key       : None,
+                label: format!("Object {id}"),
+                blueprint_key: None,
                 //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
                 object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
-                position            : D3Labels::init(0f32),
-                size                : D3Labels::init(0.5f32),
-                rotation            : D3Labels::init(0f32),
+                position: D3Labels::init(0f32),
+                size: D3Labels::init(0.5f32),
+                rotation: D3Labels::init(0f32),
                 //texture             : [EMPTY; 3],
-                texture             : Texture::init(),
-                color               : [1f32; 4],
+                texture: Texture::init(),
+                color: [1f32; 4],
+                shape_2d_3d_specific_settings: Shape2D3DSepcificSettings::D2(shape_2d_3d_specific_settings::shape_2d_settings::Shape2DSettings::init()),
             }
         }
     

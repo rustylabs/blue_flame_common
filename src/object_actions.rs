@@ -62,7 +62,7 @@ pub fn delete_shape(label: &str, blue_engine_args: &mut BlueEngineArgs)
 pub mod update_shape
 {
     use blue_engine::Window;
-use crate::structures::{flameobject::{self}, BlueEngineArgs};
+    use crate::structures::{flameobject::{self}, BlueEngineArgs};
 
 
     pub fn size(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs, window: &Window)
@@ -120,8 +120,8 @@ use crate::structures::{flameobject::{self}, BlueEngineArgs};
             //blue_engine::TextureData::Bytes(match std::fs::read(&flameobject.1.texture.file_location)
             blue_engine::TextureData::Bytes(match std::fs::read(crate::filepath_handling::relativepath_to_fullpath(&flameobject_settings.texture.file_location, project_dir))
             {
-                Ok(v)       => v,
-                Err(_)        => blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec(),//{println!("TextureData error: {e}"); blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec()}
+                Ok(v) => v,
+                Err(_) => blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec(),//{println!("TextureData error: {e}"); blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec()}
             }),
                 //std::fs::read("/mnt/Windows10/Users/Nishant/Desktop/My made programs/Projects/Game Engine/Example projects/final_test/assets/main_player.png").unwrap()),
             texture_mode,
