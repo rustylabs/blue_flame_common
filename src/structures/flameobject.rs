@@ -1,6 +1,6 @@
 // Gets linked from scene as vector
 
-use crate::radio_options::object_type::{ObjectType, shape::{self, Shape3D}, self};
+use crate::radio_options::object_type::ObjectType;
 use super::structures::D3Labels;
 
 // e.g. sprite animation for 2D
@@ -61,17 +61,16 @@ pub mod shape_2d_3d_specific_settings
         }
     }
 
-
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Flameobject
 {
-    pub id          : u16,
-    pub visible     : bool,
-    pub selected    : bool,
+    pub id: u16,
+    pub visible: bool,
+    pub selected: bool,
     //label       : (String, issues::Issues),
-    pub settings    : Settings,
+    pub settings: Settings,
 }
 impl Flameobject
 {
@@ -80,21 +79,21 @@ impl Flameobject
         Self
         {
             id,
-            visible     : true,
-            selected    : true,
+            visible: true,
+            selected: true,
             //label       : (format!("Object {id}"), issues::Issues::init()),
 
-            settings    : Settings::init(id, object_type),
+            settings: Settings::init(id, object_type),
         }
     }
     pub fn copy(&self) -> Self
     {
         Self
         {
-            id          : self.id,
-            visible     : self.visible,
-            selected    : self.selected,
-            settings    : self.settings.clone(),
+            id: self.id,
+            visible: self.visible,
+            selected: self.selected,
+            settings: self.settings.clone(),
         }
     }
     pub fn change_choice(list: &mut [Self], choice_true: u16)
@@ -166,7 +165,11 @@ pub struct Settings
     pub texture: Texture,
     //texture             : [String; 3],
     pub color: [f32; 4],
+    pub particle_systems: Option<Vec<ParticleSystem>>,
     pub shape_2d_3d_specific_settings: Shape2D3DSepcificSettings,
+    pub box_colliders: Option<Vec<BoxCollider>>,
+    pub linked_code: String,
+
 }
 impl Settings
 {
@@ -220,18 +223,72 @@ impl Settings
             //texture             : [EMPTY; 3],
             texture: Texture::init(),
             color: [1f32; 4],
+            particle_systems: None,
             shape_2d_3d_specific_settings: Shape2D3DSepcificSettings::D2(shape_2d_3d_specific_settings::shape_2d_settings::Shape2DSettings::init()),
+            box_colliders: None,
+            linked_code: String::new(),
         }
     }
 
 }
 
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+pub struct ParticleSystem
+{
+    pub enabled: bool,
+    pub texture: Texture,
+    pub rotation: D3Labels,
+    pub size: D3Labels,
+    pub offset: D3Labels,
+}
+impl ParticleSystem
+{
+    pub fn init() -> Self
+    {
+        Self
+        {
+            enabled: false,
+            texture: Texture::init(),
+            rotation: D3Labels::init(0f32),
+            size: D3Labels::init(0f32),
+            offset: D3Labels::init(0f32),
+        }
+    }
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+pub struct BoxCollider
+{
+    pub enabled: bool,
+    pub is_trigger: bool,
+    pub offset: D3Labels, // How far away from the object
+    pub size: D3Labels,
+    pub rotation: D3Labels,
+    pub mimic_object: bool, // If enabled, you cannot change size or rotation and will use the same rotation and size as the object 
+}
+impl BoxCollider
+{
+    pub fn init(size: D3Labels, rotation: D3Labels) -> Self
+    {
+        Self
+        {
+            enabled: false,
+            is_trigger: false,
+            offset: D3Labels::init(0f32),
+            size,
+            rotation,
+            mimic_object: true,
+        }
+    }
+}
+
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Texture
 {
-    pub file_location   : String,
+    pub file_location: String,
     //pub mode            : [bool; 3]
-    pub mode            : crate::radio_options::Texture,
+    pub mode: crate::radio_options::Texture,
 }
 impl Texture
 {
@@ -239,9 +296,9 @@ impl Texture
     {
         Self
         {
-            file_location   : String::new(),
+            file_location: String::new(),
             //mode            : [true /*Clamp*/, false /*Triangle*/, false /*Line*/],
-            mode            : crate::radio_options::Texture::Clamp,
+            mode: crate::radio_options::Texture::Clamp,
         }
     }
 }

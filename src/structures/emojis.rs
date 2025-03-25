@@ -13,6 +13,7 @@ pub struct Emojis
     pub undo_redo: UndoRedo,
     pub file_icons: FileIcons,
     pub arrows: Arrows,
+    pub script: &'static str,
 }
 impl Emojis
 {
@@ -31,6 +32,7 @@ impl Emojis
             undo_redo: UndoRedo::init(),
             file_icons: FileIcons::init(),
             arrows: Arrows::init(),
+            script: "</>",
         }
     }
 }

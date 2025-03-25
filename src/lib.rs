@@ -3,7 +3,6 @@ pub mod object_actions;
 pub mod radio_options;
 pub mod structures;
 pub mod undo_redo;
-pub mod emojis;
 
 pub struct FileExtensionNames
 {

@@ -139,7 +139,6 @@ pub struct MouseFunctions
 pub struct GameEditorArgs<'a>
 {
     pub filepaths: &'a mut FilePaths,
-    pub string_backups: &'a mut StringBackups,
     pub widget_functions: &'a mut WidgetFunctions,
     pub project_config: &'a mut ProjectConfig,
     pub current_project_dir: &'a mut String,
@@ -180,12 +179,6 @@ impl WidgetFunctions
         self.flameobject_old = None;
     }
 }
-pub struct StringBackups
-{
-    pub texture     : String,
-    pub label       : String,
-}
-
 
 pub mod scene
 {
