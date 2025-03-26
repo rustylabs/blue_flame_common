@@ -118,42 +118,14 @@ impl Flameobject
             item.id = i as u16;
         }
     }
-    // Going to fuck this off as well
-    pub fn get_available_id(list: &mut [Self]) -> u16
-    {
-        let mut lowest_number: u16 = 0; // For unused lowest number used as ID
-        let mut found_number = false;
-        let len = list.len();
 
-        if len == 0
-        {
-            return lowest_number;
-        }
-
-        while found_number == false
-        {
-            for (i, item) in list.iter().enumerate()
-            {
-                if item.id == lowest_number
-                {
-                    lowest_number += 1;
-                    break;
-                }
-                // Last element and found no matching numbers
-                if i == (len - 1)
-                {
-                    found_number = true;
-                }
-            }
-        }
-        return lowest_number;
-    }
     // Checks for warnings and errors for labels and assigns the Issues variables appropriately
 }
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct Settings
 {
-    pub label: String, // "Object 0", "Object 1" etc
+    pub label_key: String, // "Object 0", "Object 1" used as key for engine, remains static and does not change
+    pub label: String,
     pub blueprint_key: Option<(String, bool)>, // Used as key to modify all objects that has this key and can it get affected by future blueprint saves
     //pub object_type         : [bool; 3],
     pub object_type: ObjectType,
@@ -212,6 +184,7 @@ impl Settings
 
         Self
         {
+            label_key: format!("Object {id}"),
             label: format!("Object {id}"),
             blueprint_key: None,
             //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],

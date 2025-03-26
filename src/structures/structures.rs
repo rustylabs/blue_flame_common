@@ -6,7 +6,7 @@ use crate::radio_options::{ViewModes, object_type::ObjectType, ObjectMouseMoveme
 use self::project_config::ProjectConfig;
 
 // Categorisation of structs
-use super::{file_explorer::{FileExplorerContent, FilePaths}, flameobject};
+use super::{file_explorer::FilePaths, flameobject};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct D3Labels
@@ -148,7 +148,6 @@ pub struct GameEditorArgs<'a>
     pub viewmode: &'a mut ViewModes,
     pub previous_viewmode: &'a mut ViewModes,
     pub enable_shortcuts: &'a mut bool,
-    pub file_explorer_contents: &'a mut (bool, Option<Vec<FileExplorerContent>>),
 }
 
 

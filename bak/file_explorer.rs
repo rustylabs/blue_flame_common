@@ -1,6 +1,15 @@
-use std::path::PathBuf;
+use std::{fs::DirEntry, path::PathBuf};
 
 // Built in file explorer for egui
+#[derive(Debug)]
+pub struct FileExplorerContent
+{
+    pub subdir_level: u16,
+    pub is_collapsed: bool,
+    pub selected: bool,
+    pub actual_content: DirEntry,
+    pub childrens_content: Option<Vec<Self>>, // Sub dir
+}
 // Defines where all the file paths are
 pub struct FilePaths
 {

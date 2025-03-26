@@ -1,6 +1,6 @@
 // Deals with changing shapes on the scene, it does NOT affect the shape that is stored on game editor's variables
 
-use blue_engine::{primitive_shapes::{triangle, square}, Renderer, ObjectSettings, ObjectStorage, Window};
+use blue_engine::{primitive_shapes::{triangle, square}, ObjectSettings, Window};
 use crate::structures::{flameobject, structures::BlueEngineArgs};
 use crate::radio_options::object_type::{ObjectType, shape, light};
 
@@ -15,8 +15,8 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
         {
             shape::Dimension::D2(shape) => match shape
             {
-                shape::Shape2D::Square => square(flameobject_settings.label.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects),
-                shape::Shape2D::Triangle => triangle(flameobject_settings.label.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects),
+                shape::Shape2D::Square => square(flameobject_settings.label_key.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects),
+                shape::Shape2D::Triangle => triangle(flameobject_settings.label_key.clone(), ObjectSettings::default(), blue_engine_args.renderer, blue_engine_args.objects),
                 shape::Shape2D::Line => return,
             }
             shape::Dimension::D3(shape) => match shape
@@ -39,12 +39,12 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
         for i in 0..3
         {
             /*
-            update_shape::rotation(&flameobject.label,
-                match mapper::ThreeDLabels::value(i) 
+            update_shape::rotation(&flameobject.label_key,
+                match mapper::ThreeDlabel_keys::value(i) 
                 {
-                    ThreeDLabels::X(_, axis)       => axis,
-                    ThreeDLabels::Y(_, axis)       => axis,
-                    ThreeDLabels::Z(_, axis)       => axis,
+                    ThreeDlabel_keys::X(_, axis)       => axis,
+                    ThreeDlabel_keys::Y(_, axis)       => axis,
+                    ThreeDlabel_keys::Z(_, axis)       => axis,
                 }
             , *rotation, objects)
             */
@@ -54,10 +54,10 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
     }
 }
 // Destroys old hashmap stored in game engine
-pub fn delete_shape(label: &str, blue_engine_args: &mut BlueEngineArgs)
+pub fn delete_shape(label_key: &str, blue_engine_args: &mut BlueEngineArgs)
 {
-    blue_engine_args.objects.remove(label);
-    println!("delete_shape(): {}", label);
+    blue_engine_args.objects.remove(label_key);
+    println!("delete_shape(): {}", label_key);
 }
 pub mod update_shape
 {
@@ -68,14 +68,14 @@ pub mod update_shape
     pub fn size(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs, window: &Window)
     {
         blue_engine_args.objects
-            .get_mut(&flameobject_settings.label)
+            .get_mut(&flameobject_settings.label_key)
             .unwrap()
             .resize(flameobject_settings.size.x, flameobject_settings.size.y, flameobject_settings.size.z, window.as_ref().unwrap().inner_size());
     }
     pub fn position(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs)
     {
         blue_engine_args.objects
-            .get_mut(&flameobject_settings.label)
+            .get_mut(&flameobject_settings.label_key)
             .unwrap()
             .set_position([flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z]);
             //.position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
@@ -83,15 +83,15 @@ pub mod update_shape
     pub fn color(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs)
     {
         blue_engine_args.objects
-            .get_mut(&flameobject_settings.label)
+            .get_mut(&flameobject_settings.label_key)
             .unwrap()
             //.set_uniform_color(flameobject_settings.color[0], flameobject_settings.color[1], flameobject_settings.color[2], flameobject_settings.color[3])
             .set_color(flameobject_settings.color[0], flameobject_settings.color[1], flameobject_settings.color[2], flameobject_settings.color[3]);
     }
-    pub fn rotation(flameobject_label: &str, axis: blue_engine::RotateAxis, rotation: f32, blue_engine_args: &mut BlueEngineArgs)
+    pub fn rotation(flameobject_label_key: &str, axis: blue_engine::RotateAxis, rotation: f32, blue_engine_args: &mut BlueEngineArgs)
     {
         let previous_rotation = blue_engine_args.objects
-            .get(flameobject_label)
+            .get(flameobject_label_key)
             .unwrap()
             .rotation;
 
@@ -99,7 +99,7 @@ pub mod update_shape
 
         /*
         objects
-            .get_mut(flameobject_label)
+            .get_mut(flameobject_label_key)
             .unwrap()
             .rotate(rotation, axis);
         */
@@ -128,7 +128,7 @@ pub mod update_shape
         );
         
         blue_engine_args.objects
-            .get_mut(&flameobject_settings.label)
+            .get_mut(&flameobject_settings.label_key)
             .unwrap()
             .set_texture(texture.unwrap());
 
