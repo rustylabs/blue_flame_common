@@ -57,8 +57,13 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
 pub fn delete_shape(label_key: &str, blue_engine_args: &mut BlueEngineArgs)
 {
     blue_engine_args.objects.remove(label_key);
-    println!("delete_shape(): {}", label_key);
 }
+
+pub fn if_object_exists(label_key: &str, blue_engine_args: &mut BlueEngineArgs) -> bool
+{
+    return blue_engine_args.objects.contains_key(label_key);
+}
+
 pub mod update_shape
 {
     use blue_engine::Window;

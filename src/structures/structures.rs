@@ -146,7 +146,6 @@ pub struct GameEditorArgs<'a>
     pub window_size: &'a WindowSize,
     pub mouse_functions: &'a mut MouseFunctions,
     pub viewmode: &'a mut ViewModes,
-    pub previous_viewmode: &'a mut ViewModes,
     pub enable_shortcuts: &'a mut bool,
 }
 

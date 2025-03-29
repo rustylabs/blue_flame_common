@@ -199,17 +199,17 @@ pub mod flameobject
 
             Self
             {
-                label               : format!("Object {id}"),
-                blueprint_key       : None,
+                label: format!("Object {id}"),
+                blueprint_key: None,
                 //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
                 object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),
                 //position            : [0f32; 3],
-                position            : D3Labels::init(0f32),
-                size                : D3Labels::init(30f32),
-                rotation            : D3Labels::init(0f32),
+                position: D3Labels::init(0f32),
+                size: D3Labels::init(30f32),
+                rotation: D3Labels::init(0f32),
                 //texture             : [EMPTY; 3],
-                texture             : Texture::init(),
-                color               : [1f32; 4],
+                texture: Texture::init(),
+                color: [1f32; 4],
             }
         }
     
@@ -228,9 +228,9 @@ pub mod flameobject
         {
             Self
             {
-                file_location   : String::new(),
+                file_location: String::new(),
                 //mode            : [true /*Clamp*/, false /*Triangle*/, false /*Line*/],
-                mode            : crate::radio_options::Texture::Clamp,
+                mode: crate::radio_options::Texture::Clamp,
             }
         }
     }

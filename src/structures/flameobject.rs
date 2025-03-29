@@ -71,10 +71,11 @@ pub struct Flameobject
     pub selected: bool,
     //label       : (String, issues::Issues),
     pub settings: Settings,
+    pub child_flameobject: Option<Vec<Self>>,
 }
 impl Flameobject
 {
-    pub fn init(id: u16, object_type: Option<ObjectType>) -> Self
+    pub fn init(id: u16, object_type: Option<ObjectType>, is_blueprint: bool,) -> Self
     {
         Self
         {
@@ -83,20 +84,34 @@ impl Flameobject
             selected: true,
             //label       : (format!("Object {id}"), issues::Issues::init()),
 
-            settings: Settings::init(id, object_type),
+            settings: Settings::init(id, object_type, is_blueprint),
+            child_flameobject: None,
         }
     }
+    /*
     pub fn copy(&self) -> Self
     {
+        let child_flameobject;
+        if let Some(ref value) = self.child_flameobject
+        {
+            child_flameobject = Some(value.clone());
+        }
+        else
+        {
+            child_flameobject = None;
+        }
+
         Self
         {
             id: self.id,
             visible: self.visible,
             selected: self.selected,
             settings: self.settings.clone(),
+            child_flameobject,
         }
     }
-    pub fn change_choice(list: &mut [Self], choice_true: u16)
+    */
+    pub fn change_choice(list: &mut[Self], choice_true: u16)
     {
         for (i, item) in list.iter_mut().enumerate()
         {
@@ -145,7 +160,7 @@ pub struct Settings
 }
 impl Settings
 {
-    pub fn init(id: u16, object_type: Option<ObjectType>) -> Self
+    pub fn init(id: u16, object_type: Option<ObjectType>, is_blueprint: bool) -> Self
     {
         use crate::radio_options::object_type::{light, shape};
         //let position = [0f32; 3];
@@ -182,10 +197,20 @@ impl Settings
             }
         };
 
+        let label_name;
+        if is_blueprint == true
+        {
+            label_name = format!("Blueprint {id}");
+        }
+        else
+        {
+            label_name = format!("Object {id}");
+        }
+
         Self
         {
-            label_key: format!("Object {id}"),
-            label: format!("Object {id}"),
+            label_key: label_name.clone(),
+            label: label_name.clone(),
             blueprint_key: None,
             //object_type         : [true /*Square*/, false /*Triangle*/, false /*Line*/],
             object_type,         //: ObjectType::Shape(shape::Dimension::D2(shape::Shape2D::Square)),

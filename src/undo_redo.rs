@@ -171,7 +171,7 @@ impl UndoRedo
                 // Recreate the deleted object
                 Action::Delete(values) =>
                 {
-                    flameobjects.push(values.copy());
+                    //flameobjects.push(values.copy()); // Commenting out as copy method for flameobjects
                     let idx = flameobjects.len() - 1;
                     crate::object_actions::create_shape(&flameobjects[idx].settings, project_dir, blue_engine_args, window);
 
@@ -281,7 +281,7 @@ impl UndoRedo
             {
                 Action::Create(values) =>
                 {
-                    flameobjects.push(flameobject::Flameobject::init(values.1, Some(values.0)));
+                    flameobjects.push(flameobject::Flameobject::init(values.1, Some(values.0), false));
                     crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, blue_engine_args, window);
                 }
                 Action::Update(values) =>
