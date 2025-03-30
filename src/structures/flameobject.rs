@@ -71,7 +71,7 @@ pub struct Flameobject
     pub selected: bool,
     //label       : (String, issues::Issues),
     pub settings: Settings,
-    pub child_flameobject: Option<Vec<Self>>,
+    pub children: Option<Vec<Self>>,
 }
 impl Flameobject
 {
@@ -85,20 +85,20 @@ impl Flameobject
             //label       : (format!("Object {id}"), issues::Issues::init()),
 
             settings: Settings::init(id, object_type, is_blueprint),
-            child_flameobject: None,
+            children: None,
         }
     }
     /*
     pub fn copy(&self) -> Self
     {
-        let child_flameobject;
-        if let Some(ref value) = self.child_flameobject
+        let children;
+        if let Some(ref value) = self.children
         {
-            child_flameobject = Some(value.clone());
+            children = Some(value.clone());
         }
         else
         {
-            child_flameobject = None;
+            children = None;
         }
 
         Self
@@ -107,15 +107,15 @@ impl Flameobject
             visible: self.visible,
             selected: self.selected,
             settings: self.settings.clone(),
-            child_flameobject,
+            children,
         }
     }
     */
-    pub fn change_choice(list: &mut[Self], choice_true: u16)
+    pub fn change_choice(list: &mut[Self], choice_true: usize)
     {
         for (i, item) in list.iter_mut().enumerate()
         {
-            if i as u16 == choice_true
+            if i == choice_true
             {
                 item.selected = true;
             }
@@ -123,14 +123,6 @@ impl Flameobject
             {
                 item.selected = false;
             }
-        }
-    }
-    // When user deletes the objects, we need to re calculate ids, Most likely we will fuck this off in the near future
-    pub fn recalculate_id(list: &mut [Self])
-    {
-        for (i, item) in list.iter_mut().enumerate()
-        {
-            item.id = i as u16;
         }
     }
 

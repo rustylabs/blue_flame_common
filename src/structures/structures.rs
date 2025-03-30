@@ -190,8 +190,6 @@ pub mod scene
     {
         pub id: u16,
         pub label: String,
-        pub flameobject_selected_parent_idx: u16,
-        pub flameobject_highest_id: u16,  // Highest id number that is used
         pub selected: bool,
         pub settings: Settings,
         pub undo_redo: undo_redo::UndoRedo,
@@ -205,8 +203,6 @@ pub mod scene
             {
                 id,
                 label: format!("Scene {id}"),
-                flameobject_highest_id: 0,
-                flameobject_selected_parent_idx: 0,
                 selected: true,
                 settings: Settings::default(),
                 undo_redo: undo_redo::UndoRedo{actions: Vec::new(), current_idx: (None, true)},
@@ -227,13 +223,52 @@ pub mod scene
                 }
             }
         }
-        // When user deletes the scenes, we need to re calculate ids
-        pub fn recalculate_id(list: &mut  [Self])
+
+        // If multiple objects are selected, None will be returned
+        pub fn get_selected_flameobject_idx(&self, flameobjects: &[Flameobject]) -> Option<usize>
         {
-            for (i, item) in list.iter_mut().enumerate()
+            let mut idx: Option<usize> = None;
+            for (i, flameobject) in flameobjects.iter().enumerate()
             {
-                item.id = i as u16;
+                if flameobject.selected == true
+                {
+                    // If it already has a value in it, it means multiple objects are selected, we should return None
+                    if let Some(_) = idx
+                    {
+                        return None;
+                    }
+                    idx = Some(i);
+                }
             }
+
+            return idx;
+        }
+
+        pub fn get_available_id(&self, flameobjects: &[Flameobject]) -> u16
+        {
+            let mut available_id: u16 = 0;
+            let mut found_available_id: bool = true;
+
+
+            for i in 0..u16::MAX
+            {
+                found_available_id = true;
+
+                for flameobject in flameobjects.iter()
+                {
+                    if flameobject.id == i
+                    {
+                        found_available_id = false;
+                        break;
+                    }
+                }
+                if found_available_id == true
+                {
+                    available_id = i;
+                    break;
+                }
+            }
+            return available_id;
         }
     }
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
