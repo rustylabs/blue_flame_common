@@ -1,7 +1,7 @@
 // Gets linked from scene as vector
 
 use crate::radio_options::object_type::ObjectType;
-use super::structures::D3Labels;
+use super::D3Labels;
 
 // e.g. sprite animation for 2D
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
