@@ -71,7 +71,7 @@ pub struct Flameobject
     pub selected: bool,
     //label       : (String, issues::Issues),
     pub settings: Settings,
-    pub children: Option<Vec<Self>>,
+    pub children: Vec<Self>,
 }
 impl Flameobject
 {
@@ -85,7 +85,7 @@ impl Flameobject
             //label       : (format!("Object {id}"), issues::Issues::init()),
 
             settings: Settings::init(id, object_type, is_blueprint),
-            children: None,
+            children: Vec::new(),
         }
     }
     /*
@@ -111,19 +111,100 @@ impl Flameobject
         }
     }
     */
-    pub fn change_choice(list: &mut[Self], choice_true: usize)
+    pub fn change_choice(flameobjects: &mut[Self], change_choice_id: u16)
     {
-        for (i, item) in list.iter_mut().enumerate()
+        for flameobject in flameobjects.iter_mut()
         {
-            if i == choice_true
+            if flameobject.id == change_choice_id
             {
-                item.selected = true;
+                flameobject.selected = true;
             }
             else
             {
-                item.selected = false;
+                flameobject.selected = false;
+            }
+
+            Self::change_choice(&mut flameobject.children, change_choice_id);
+        }
+    }
+
+    // If multiple objects are selected, None will be returned
+    pub fn get_selected_id(flameobjects: &[Self]) -> Option<u16>
+    {
+        let counter: u16 = 0;
+        let mut id: Option<u16> = None;
+
+        fn selection_state_counter(flameobjects: &[Flameobject], id: &mut Option<u16>, mut counter: u16) -> u16
+        {
+            for flameobject in flameobjects.iter()
+            {
+
+                counter = selection_state_counter(&flameobject.children, id, counter);
+                if counter > 1
+                {
+                    return counter;
+                }
+
+                if flameobject.selected == true
+                {
+                    counter += 1;
+
+                    if counter > 1
+                    {
+                        return counter;
+                    }
+                    else
+                    {
+                        *id = Some(flameobject.id);
+                    }
+                }
+            }
+            return counter;
+        }
+
+        if selection_state_counter(flameobjects, &mut id, counter) > 1
+        {
+            id = None;
+        }
+
+        return id;
+    }
+
+
+    pub fn get_available_id(flameobjects: &[Self], mut id_start: Option<u16>) -> u16
+    {
+        let mut available_id: u16 = 0;
+        let mut found_available_id: bool = true;
+
+        // If it is not recursive call, start counting from 0
+        if let None = id_start {id_start = Some(0)};
+
+        if let Some(id_start) = id_start
+        {
+            for mut i in id_start..u16::MAX
+            {
+                found_available_id = true;
+
+                for flameobject in flameobjects.iter()
+                {
+                    // id from child object could not be found so assign it to i then check for rest of objects if it has id or not
+                    i = Self::get_available_id(&flameobject.children, Some(i));
+
+                    if flameobject.id == i
+                    {
+                        found_available_id = false;
+                        break;
+                    }
+                }
+                if found_available_id == true
+                {
+                    available_id = i;
+                    break;
+                }
             }
         }
+
+        return available_id;
     }
 
     // Checks for warnings and errors for labels and assigns the Issues variables appropriately

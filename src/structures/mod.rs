@@ -4,7 +4,8 @@ pub mod flameobject;
 pub mod file_explorer;
 pub mod emojis;
 
-use blue_engine::{header::{ObjectStorage, Renderer, Window}, Camera};
+//use blue_engine::{header::{ObjectStorage, Renderer, Window}, Camera};
+use blue_engine::{ObjectStorage, Renderer, Window, Camera};
 use blue_engine_utilities::{egui::egui::{self, Context}};
 
 use crate::radio_options::{ViewModes, object_type::ObjectType, ObjectMouseMovement};
@@ -229,61 +230,14 @@ pub mod scene
                 }
             }
         }
-
-        // If multiple objects are selected, None will be returned
-        pub fn get_selected_flameobject_idx(&self, flameobjects: &[Flameobject]) -> Option<usize>
-        {
-            let mut idx: Option<usize> = None;
-            for (i, flameobject) in flameobjects.iter().enumerate()
-            {
-                if flameobject.selected == true
-                {
-                    // If it already has a value in it, it means multiple objects are selected, we should return None
-                    if let Some(_) = idx
-                    {
-                        return None;
-                    }
-                    idx = Some(i);
-                }
-            }
-
-            return idx;
-        }
-
-        pub fn get_available_id(&self, flameobjects: &[Flameobject]) -> u16
-        {
-            let mut available_id: u16 = 0;
-            let mut found_available_id: bool = true;
-
-
-            for i in 0..u16::MAX
-            {
-                found_available_id = true;
-
-                for flameobject in flameobjects.iter()
-                {
-                    if flameobject.id == i
-                    {
-                        found_available_id = false;
-                        break;
-                    }
-                }
-                if found_available_id == true
-                {
-                    available_id = i;
-                    break;
-                }
-            }
-            return available_id;
-        }
     }
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     pub struct Settings
     {
-        pub background_color        : u32,
-        pub high_power_mode         : bool,
-        pub game_type_dimensions    : GameTypeDimensions,
-        pub undo_redo_length        : u16,
+        pub background_color: u32,
+        pub high_power_mode: bool,
+        pub game_type_dimensions: GameTypeDimensions,
+        pub undo_redo_length: u16,
     }
     impl Settings
     {
@@ -291,10 +245,10 @@ pub mod scene
         {
             Self
             {
-                background_color        : 0x4d4d4d,         // Similar to Godot's background color for 2D
-                high_power_mode         : true,
-                game_type_dimensions    : GameTypeDimensions::D2,
-                undo_redo_length        : 36,
+                background_color: 0x4d4d4d,         // Similar to Godot's background color for 2D
+                high_power_mode: true,
+                game_type_dimensions: GameTypeDimensions::D2,
+                undo_redo_length: 36,
             }
         }
     }

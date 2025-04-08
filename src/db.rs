@@ -3,7 +3,7 @@ pub mod scene
 {
     //use super::*;
     use std::io::Read;
-    use blue_engine::{ObjectStorage, Window, Renderer};
+    use blue_engine::Window;
     use crate::structures::{flameobject::Flameobject, scene::Scene, BlueEngineArgs};
     
 
@@ -12,6 +12,7 @@ pub mod scene
     //const FILE_NAME: &'static str = "project_save";
 
     // Destroys all shapes from the scene
+
 
     mod alter_shapes
     {
@@ -25,12 +26,12 @@ pub mod scene
                 crate::object_actions::delete_shape(&flameobject.settings.label, blue_engine_args);
             }
         }
-        pub fn create_shapes(flameobjects: &mut Vec<Flameobject>, project_dir: &str,
+        pub fn create_shapes(flameobjects: &mut Vec<Flameobject>,
         /*Game engine shit*/   blue_engine_args: &mut BlueEngineArgs, window: &Window)
         {
             for flameobject in flameobjects.iter()
             {
-                crate::object_actions::create_shape(&flameobject.settings, project_dir, blue_engine_args, window);
+                crate::object_actions::create_shape(&flameobject.settings, blue_engine_args, window);
                 /*
                 for i in 0..flameobject.1.object_type.len()
                 {
@@ -45,44 +46,45 @@ pub mod scene
     }
 
 
-    pub fn save(scene: &Scene, filepath: &str, project_dir: &str) -> bool // Return true if all went fine
+    pub fn save(scene: &Scene, filepath: &str) -> bool // Return true if all went fine
     {
         let data = postcard::to_stdvec(&(VERSION, scene)).unwrap();
 
-        match std::fs::write(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)), &data)
+        //match std::fs::write(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)), &data)
+        match std::fs::write(filepath, &data)
         {
             Ok(_)               => {println!("Scene saved!"); return true},
-            Err(e)       => {println!("Scene save error: {e}"); return false},
+            Err(e)       => {println!("Scene save error: {e}\nFilepath: {filepath}"); return false},
         }
     }
-    pub fn load(scene: &mut Scene, project_dir: &str, filepath: &str, remove_shapes: bool,
+    pub fn load(scene: &mut Scene, filepath: &str, remove_shapes: bool,
         /*Game engine shit*/ blue_engine_args: &mut BlueEngineArgs, window: &Window) -> bool // Making sure there was no issue with loading file due to error in filepath
     {
 
-        let mut file = match std::fs::File::open(format!("{}", crate::filepath_handling::relativepath_to_fullpath(filepath, project_dir)))
+        let mut file = match std::fs::File::open(filepath)
         {
             Ok(d) => {println!("Flameobject: {} loaded!", filepath); d},
             Err(e) => 
-                            {
-                                println!("Load error on flameobjects: {}: {e}", filepath);
-                                return false;
-                                
-                                /*
-                                if remove_shapes == true
-                                {
-                                    // Deletes shapes
-                                    alter_shapes::delete_shapes(&mut loaded_scene.flameobjects, objects);
-                                    
-                                    // Creates new vector and pushes shit
-                                    loaded_scene.flameobjects = Vec::new();
-                                    loaded_scene.flameobjects.push(Flameobject::init(0));
+            {
+                println!("Load error on flameobjects: {}: {e}", filepath);
+                return false;
+                
+                /*
+                if remove_shapes == true
+                {
+                    // Deletes shapes
+                    alter_shapes::delete_shapes(&mut loaded_scene.flameobjects, objects);
+                    
+                    // Creates new vector and pushes shit
+                    loaded_scene.flameobjects = Vec::new();
+                    loaded_scene.flameobjects.push(Flameobject::init(0));
 
-                                    // Creates new shapes
-                                    alter_shapes::create_shapes(&mut loaded_scene.flameobjects, project_dir, renderer, objects, window);
-                                }
-                                return;
-                                */
-                            }
+                    // Creates new shapes
+                    alter_shapes::create_shapes(&mut loaded_scene.flameobjects, project_dir, renderer, objects, window);
+                }
+                return;
+                */
+            }
         };
 
         
@@ -114,7 +116,7 @@ pub mod scene
 
 
         // Create all the shapes after loading into memory
-        alter_shapes::create_shapes(&mut scene.flameobjects, project_dir, blue_engine_args, window);
+        alter_shapes::create_shapes(&mut scene.flameobjects, blue_engine_args, window);
 
         //println!("db version Flameobject {}: {version}", scene.label);
         return true;

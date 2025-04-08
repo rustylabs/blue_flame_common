@@ -4,10 +4,59 @@ pub mod radio_options;
 pub mod structures;
 pub mod undo_redo;
 
+
+/*
 pub struct FileExtensionNames
 {
     pub scene: &'static str,
     pub blueprint: &'static str,
+}
+*/
+#[derive(Clone, Copy)]
+pub enum FileExtensionNames
+{
+    Scene,
+    Blueprint,
+}
+impl FileExtensionNames
+{
+    pub fn name(self) -> &'static str
+    {
+        match self
+        {
+            Self::Scene => return "Scene",
+            Self::Blueprint => return "Blueprint",
+        }
+    }
+    pub fn extension_name(self) -> &'static str
+    {
+        match self
+        {
+            Self::Scene => return "bsce",
+            Self::Blueprint => return "bprint",
+        }
+    }
+    pub fn add_extension_name(self, value: &str) -> String
+    {
+        return format!("{}.{}", value, Self::extension_name(self));
+    }
+    /*
+    // Adds extension name and then returns it,
+    pub fn add_extension_name(self, value: &str) -> String
+    {
+        const DOT: &str = ".";
+
+        // If we don't have extension name, then add it
+        if value.ends_with(&format!("{DOT}{}", Self::extension_name(self))) == false
+        {
+            return format!("{value}{DOT}{}", Self::extension_name(self));
+        }
+        else
+        {
+            return value.to_string();
+        }
+    }
+    */
 }
 
 
@@ -67,6 +116,7 @@ pub fn range_limiter<T: PartialOrd + Copy>(mut value: T, min: T, max: T) -> T
 }
 
 
+/*
 // Deals anything to do with file paths
 pub mod filepath_handling
 {
@@ -208,3 +258,4 @@ pub mod filepath_handling
         return fullpath.display().to_string();
     }
 }
+*/

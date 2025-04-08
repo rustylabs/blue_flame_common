@@ -160,7 +160,7 @@ impl UndoRedo
                         {
                             crate::object_actions::delete_shape(&flameobject.settings.label, blue_engine_args);
                             flameobject.settings = values.0.clone();
-                            crate::object_actions::create_shape(&flameobject.settings, project_dir, blue_engine_args, window);
+                            crate::object_actions::create_shape(&flameobject.settings, blue_engine_args, window);
 
                             // Saving so that if we are doing new action and rewriting existing actions, then we need to get the current values, not the values before undoing
                             widget_functions.flameobject_old = Some(flameobject.settings.clone());
@@ -173,7 +173,7 @@ impl UndoRedo
                 {
                     //flameobjects.push(values.copy()); // Commenting out as copy method for flameobjects
                     let idx = flameobjects.len() - 1;
-                    crate::object_actions::create_shape(&flameobjects[idx].settings, project_dir, blue_engine_args, window);
+                    crate::object_actions::create_shape(&flameobjects[idx].settings, blue_engine_args, window);
 
                     if values.selected == true
                     {
@@ -282,7 +282,7 @@ impl UndoRedo
                 Action::Create(values) =>
                 {
                     flameobjects.push(flameobject::Flameobject::init(values.1, Some(values.0), false));
-                    crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, project_dir, blue_engine_args, window);
+                    crate::object_actions::create_shape(&flameobjects[flameobjects.len() - 1].settings, blue_engine_args, window);
                 }
                 Action::Update(values) =>
                 {
@@ -294,7 +294,7 @@ impl UndoRedo
                             crate::object_actions::delete_shape(&flameobject.settings.label, blue_engine_args);
                             flameobject.settings = values.1.clone();
                             //string_backups.label = flameobjects[values.2 as usize].settings.label.clone();
-                            crate::object_actions::create_shape(&flameobject.settings, project_dir, blue_engine_args, window);
+                            crate::object_actions::create_shape(&flameobject.settings, blue_engine_args, window);
 
                             widget_functions.flameobject_old = Some(flameobject.settings.clone());
                             break;

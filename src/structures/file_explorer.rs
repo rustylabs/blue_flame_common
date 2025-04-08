@@ -4,10 +4,10 @@ use std::path::PathBuf;
 // Defines where all the file paths are
 pub struct FilePaths
 {
-    pub projects        : PathBuf, // ~/.config/blue_flame/blue_flame_common
-    pub project_config  : &'static str, // <current_project_dir>/blue_flame/project.conf
-    pub current_scene   : String,
-    pub library         : PathBuf,
+    pub all_projects_manager: PathBuf, // ~/.config/blue_flame/blue_flame_common // Manages all projects and what is saved
+    pub current_scene: String,
+    pub project_config: String, // <current_project_dir>/blue_flame/project.conf
+    pub library: PathBuf,
 }
 impl FilePaths
 {
@@ -15,20 +15,20 @@ impl FilePaths
     {
         // Creating dirs
         // ~/.config.blue_flame
-        let mut projects: PathBuf =  match dirs::home_dir()
+        let mut all_projects_manager: PathBuf =  match dirs::home_dir()
         {
-            Some(v)         => v,
+            Some(v)  => v,
             //None                     => {println!("Unable to obtain home dir"); PathBuf::new()}
-            None                     => panic!("Unable to obtain home dir")
+            None => panic!("Unable to obtain home dir")
         };
-        projects.push(".config");
-        projects.push("blue_flame");
+        all_projects_manager.push(".config");
+        all_projects_manager.push("blue_flame");
 
-        println!("config_dir: {:?}", projects);
-        match std::fs::create_dir(&projects)
+        println!("config_dir: {:?}", all_projects_manager);
+        match std::fs::create_dir(&all_projects_manager)
         {
-            Ok(_)       => println!("Config dir created succesfully in {}", projects.display()),
-            Err(e)      => println!("Unable to create config dir due to {e}"),
+            Ok(_) => println!("Config dir created succesfully in {}", all_projects_manager.display()),
+            Err(e) => println!("Unable to create config dir due to {e}"),
         }
 
         let mut library: PathBuf =  match dirs::home_dir()
@@ -40,12 +40,10 @@ impl FilePaths
         library.push(".local/share/blue_flame/blue_flame_common");
         println!("library: {:?}", library);
 
-        let project_config: &'static str = "blue_flame/project.conf";
-
         Self
         {
-            projects,
-            project_config,
+            all_projects_manager,
+            project_config: String::new(),
             current_scene: String::new(),
             library,
         }

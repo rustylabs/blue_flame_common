@@ -6,7 +6,7 @@ use crate::radio_options::object_type::{ObjectType, shape, light};
 
 
 // Either puts new shape or changes shape
-pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &str, blue_engine_args: &mut BlueEngineArgs, window: &Window)
+pub fn create_shape(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs, window: &Window)
 {
     match flameobject_settings.object_type
     {
@@ -29,9 +29,9 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
             light::Light::Direction => return,
         }
     }
-    update_shape(flameobject_settings, project_dir, blue_engine_args, window);
+    update_shape(flameobject_settings, blue_engine_args, window);
 
-    fn update_shape(flameobject_settings: &flameobject::Settings, project_dir: &str, blue_engine_args: &mut BlueEngineArgs, window: &Window)
+    fn update_shape(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs, window: &Window)
     {
         update_shape::size(flameobject_settings, blue_engine_args, window);
         update_shape::position(flameobject_settings, blue_engine_args);
@@ -49,7 +49,7 @@ pub fn create_shape(flameobject_settings: &flameobject::Settings, project_dir: &
             , *rotation, objects)
             */
         }
-        update_shape::texture(flameobject_settings, project_dir, blue_engine_args);
+        update_shape::texture(flameobject_settings, blue_engine_args);
         
     }
 }
@@ -82,8 +82,9 @@ pub mod update_shape
         blue_engine_args.objects
             .get_mut(&flameobject_settings.label_key)
             .unwrap()
-            .set_position([flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z]);
-            //.position(flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z);
+            //.set_position([flameobject_settings.position.x, flameobject_settings.position.y, flameobject_settings.position.z]);
+            // Temporarily setting the positiont to 0 as its all fucked
+            .set_position([0f32, 0f32, 0f32]);
     }
     pub fn color(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs)
     {
@@ -109,7 +110,7 @@ pub mod update_shape
             .rotate(rotation, axis);
         */
     }
-    pub fn texture(flameobject_settings: &flameobject::Settings, project_dir: &str, blue_engine_args: &mut BlueEngineArgs)
+    pub fn texture(flameobject_settings: &flameobject::Settings, blue_engine_args: &mut BlueEngineArgs)
     {
         use crate::radio_options::Texture;
         
@@ -123,7 +124,8 @@ pub mod update_shape
         let texture = blue_engine_args.renderer.build_texture(
             "Main Player",
             //blue_engine::TextureData::Bytes(match std::fs::read(&flameobject.1.texture.file_location)
-            blue_engine::TextureData::Bytes(match std::fs::read(crate::filepath_handling::relativepath_to_fullpath(&flameobject_settings.texture.file_location, project_dir))
+            //blue_engine::TextureData::Bytes(match std::fs::read(crate::filepath_handling::relativepath_to_fullpath(&flameobject_settings.texture.file_location, project_dir))
+            blue_engine::TextureData::Bytes(match std::fs::read(&flameobject_settings.texture.file_location)
             {
                 Ok(v) => v,
                 Err(_) => blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec(),//{println!("TextureData error: {e}"); blue_engine::utils::default_resources::DEFAULT_TEXTURE.to_vec()}
